@@ -111,10 +111,8 @@
         let timeLeft = 300;
         let calories = 0;
         let timerInterval = null;
-        let chimeInterval = null;
         let audioCtx = null;
 
-        // 1. Populate Weight Options
         const weightSelect = document.getElementById('weight-select');
         for (let i = 45; i <= 150; i++) {
             let opt = document.createElement('option');
@@ -123,58 +121,28 @@
             weightSelect.appendChild(opt);
         }
 
-        // 2. Load Persistent Weight
         const savedWeight = localStorage.getItem('userWeight');
         if (savedWeight) weightSelect.value = savedWeight;
         else weightSelect.value = 75;
 
-        function saveWeight() {
-            localStorage.setItem('userWeight', weightSelect.value);
-        }
+        function saveWeight() { localStorage.setItem('userWeight', weightSelect.value); }
 
-        // 3. Audio Engine: Pleasant Mellow Chime
-        function playChime() {
+        function playSound(freq, duration, vol, type = 'sine') {
             if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
             if (audioCtx.state === 'suspended') audioCtx.resume();
-
             const osc = audioCtx.createOscillator();
             const gain = audioCtx.createGain();
-            const filter = audioCtx.createBiquadFilter();
-
-            osc.type = 'sine'; 
-            osc.frequency.setValueAtTime(440, audioCtx.currentTime); // Musical A4
-            
-            filter.type = 'lowpass';
-            filter.frequency.setValueAtTime(800, audioCtx.currentTime);
-
+            osc.type = type;
+            osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
             gain.gain.setValueAtTime(0, audioCtx.currentTime);
-            gain.gain.linearRampToValueAtTime(0.2, audioCtx.currentTime + 0.01);
-            gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.2);
-
-            osc.connect(filter);
-            filter.connect(gain);
+            gain.gain.linearRampToValueAtTime(vol, audioCtx.currentTime + 0.01);
+            gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + duration);
+            osc.connect(gain);
             gain.connect(audioCtx.destination);
-
             osc.start();
-            osc.stop(audioCtx.currentTime + 0.2);
+            osc.stop(audioCtx.currentTime + duration);
         }
 
-        function playFinalBell() {
-            const baseFreq = 220; 
-            [1, 1.5, 2].forEach(multiplier => {
-                const osc = audioCtx.createOscillator();
-                const gain = audioCtx.createGain();
-                osc.frequency.value = baseFreq * multiplier;
-                gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 4.0);
-                osc.connect(gain);
-                gain.connect(audioCtx.destination);
-                osc.start();
-                osc.stop(audioCtx.currentTime + 4.0);
-            });
-        }
-
-        // 4. App Logic
         function quickStart(mins) {
             saveWeight();
             totalSeconds = mins * 60;
@@ -187,7 +155,7 @@
         }
 
         function showMenu() {
-            stopLogic();
+            clearInterval(timerInterval);
             document.getElementById('screen-menu').classList.remove('hidden');
             document.getElementById('screen-timer').classList.add('hidden');
         }
@@ -196,7 +164,8 @@
             document.getElementById('timer').innerText = timeLeft;
             document.getElementById('cal-count').innerText = calories.toFixed(1);
             const elapsed = totalSeconds - timeLeft;
-            const isRest = (elapsed % 30) >= 20;
+            const cyclePos = elapsed % 30;
+            const isRest = cyclePos >= 20;
             const statusLabel = document.getElementById('status');
             
             if (timeLeft <= 0) {
@@ -208,40 +177,55 @@
             }
         }
 
+        function handleAudioLogic() {
+            const elapsed = totalSeconds - timeLeft;
+            const cyclePos = elapsed % 30;
+
+            // 1. Regular Heartbeat Chime (During Jump phase only)
+            if (cyclePos < 19) {
+                playSound(440, 0.4, 0.15); 
+            }
+            // 2. Rest is coming (Warning at 19 seconds)
+            else if (cyclePos === 19) {
+                playSound(660, 0.1, 0.2);
+                setTimeout(() => playSound(660, 0.1, 0.2), 250);
+                setTimeout(() => playSound(660, 0.1, 0.2), 500);
+            }
+            // 3. Work is starting (Alert at end of rest)
+            else if (cyclePos === 29) {
+                playSound(880, 0.15, 0.25);
+                setTimeout(() => playSound(880, 0.15, 0.25), 200);
+            }
+        }
+
         function startTimer() {
             if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            if (audioCtx.state === 'suspended') audioCtx.resume();
-            
             toggleUI('running');
             const weight = parseFloat(weightSelect.value);
             
             timerInterval = setInterval(() => {
                 if (timeLeft > 0) {
+                    handleAudioLogic();
                     const elapsed = totalSeconds - timeLeft;
                     const isRest = (elapsed % 30) >= 20;
                     const met = isRest ? 1.2 : 12.3;
                     calories += (met * 3.5 * weight) / (200 * 60);
                     timeLeft--;
                     updateDisplay();
-                    handleChimes();
                 } else {
                     finish();
                 }
             }, 1000);
-            handleChimes();
         }
 
-        function handleChimes() {
-            clearInterval(chimeInterval);
-            const elapsed = totalSeconds - timeLeft;
-            if ((elapsed % 30) < 20 && timeLeft > 0) {
-                chimeInterval = setInterval(() => playChime(), 333);
-            }
+        function pauseTimer() { clearInterval(timerInterval); toggleUI('paused'); }
+        
+        function finish() { 
+            clearInterval(timerInterval); 
+            playSound(220, 3.0, 0.3); // Final Zen Gong
+            updateDisplay();
+            toggleUI('idle'); 
         }
-
-        function pauseTimer() { stopLogic(); toggleUI('paused'); }
-        function stopLogic() { clearInterval(timerInterval); clearInterval(chimeInterval); }
-        function finish() { stopLogic(); playFinalBell(); updateDisplay(); toggleUI('idle'); }
 
         function toggleUI(state) {
             document.getElementById('ui-idle').classList.toggle('hidden', state !== 'idle');

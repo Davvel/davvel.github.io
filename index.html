@@ -26,6 +26,7 @@
             justify-content: center;
             height: 100vh;
             overflow: hidden;
+            user-select: none;
         }
 
         .container { width: 95%; max-width: 400px; text-align: center; }
@@ -41,7 +42,7 @@
         
         select { 
             background: #2a2a2a; color: white; border: 1px solid #444; font-size: 18px; 
-            width: 100%; padding: 12px; border-radius: 8px; outline: none;
+            width: 100%; padding: 12px; border-radius: 8px; outline: none; appearance: none;
         }
 
         .menu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
@@ -49,8 +50,6 @@
         button:active { transform: scale(0.95); }
         
         .btn-choice { background: var(--card-bg); color: white; border: 1px solid #333; height: 70px; }
-        .btn-choice:hover { border-color: var(--green); }
-        
         .btn-start { background: var(--green); color: white; width: 100%; font-size: 24px; border-radius: 50px; height: 80px; }
         .btn-pause { background: var(--orange); color: white; width: 100%; height: 80px; border-radius: 50px; }
         .btn-resume { background: var(--blue); color: white; flex: 1; height: 80px; border-radius: 50px; }
@@ -73,7 +72,7 @@
                     </select>
             </div>
 
-            <label style="text-align: left; margin-left: 5px;">Tap a duration to start</label>
+            <label style="text-align: left; margin-left: 5px;">Select duration to start</label>
             <div class="menu-grid">
                 <button class="btn-choice" onclick="quickStart(5)">5 MIN</button>
                 <button class="btn-choice" onclick="quickStart(10)">10 MIN</button>
@@ -111,10 +110,10 @@
         let timeLeft = 300;
         let calories = 0;
         let timerInterval = null;
-        let beepInterval = null;
+        let chimeInterval = null;
         let audioCtx = null;
 
-        // Populate Weight Dropdown
+        // Populate Weight Dropdown (45kg to 150kg)
         const weightSelect = document.getElementById('weight-select');
         for (let i = 45; i <= 150; i++) {
             let opt = document.createElement('option');
@@ -130,6 +129,44 @@
 
         function saveWeight() {
             localStorage.setItem('userWeight', weightSelect.value);
+        }
+
+        // --- RHYTHMIC CHIME ENGINE ---
+        function playChime() {
+            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+
+            // High-pitched percussive chime (Triangle wave is softer than square, clearer than sine)
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(1200, audioCtx.currentTime);
+            
+            gain.gain.setValueAtTime(0, audioCtx.currentTime);
+            gain.gain.linearRampToValueAtTime(0.15, audioCtx.currentTime + 0.01);
+            gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.1);
+
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+
+            osc.start();
+            osc.stop(audioCtx.currentTime + 0.1);
+        }
+
+        function playFinalBell() {
+            const frequencies = [440, 554, 659]; // A major chord
+            frequencies.forEach(f => {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.frequency.value = f;
+                gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 3.0);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start();
+                osc.stop(audioCtx.currentTime + 3.0);
+            });
         }
 
         function quickStart(mins) {
@@ -149,18 +186,6 @@
             document.getElementById('screen-timer').classList.add('hidden');
         }
 
-        function playBeep(freq, duration, vol = 0.1) {
-            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            if (audioCtx.state === 'suspended') audioCtx.resume();
-            const osc = audioCtx.createOscillator();
-            const gain = audioCtx.createGain();
-            osc.connect(gain); gain.connect(audioCtx.destination);
-            osc.frequency.value = freq;
-            gain.gain.setValueAtTime(vol, audioCtx.currentTime);
-            gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + duration);
-            osc.start(); osc.stop(audioCtx.currentTime + duration);
-        }
-
         function updateDisplay() {
             document.getElementById('timer').innerText = timeLeft;
             document.getElementById('cal-count').innerText = calories.toFixed(1);
@@ -169,7 +194,7 @@
             const statusLabel = document.getElementById('status');
             
             if (timeLeft <= 0) {
-                statusLabel.innerText = "FINISH!";
+                statusLabel.innerText = "DONE!";
                 statusLabel.style.color = "var(--green)";
             } else {
                 statusLabel.innerText = isRest ? "REST" : "JUMP!";
@@ -178,6 +203,9 @@
         }
 
         function startTimer() {
+            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            
             toggleUI('running');
             const weight = parseFloat(weightSelect.value);
             
@@ -189,29 +217,29 @@
                     calories += (met * 3.5 * weight) / (200 * 60);
                     timeLeft--;
                     updateDisplay();
-                    handleBeeps();
+                    handleChimes();
                 } else {
                     finish();
                 }
             }, 1000);
-            handleBeeps();
+            handleChimes();
         }
 
-        function handleBeeps() {
-            clearInterval(beepInterval);
+        function handleChimes() {
+            clearInterval(chimeInterval);
             const elapsed = totalSeconds - timeLeft;
             if ((elapsed % 30) < 20 && timeLeft > 0) {
-                // Play 3 times per second
-                beepInterval = setInterval(() => playBeep(880, 0.08), 333);
+                // 3 per second = 333ms interval
+                chimeInterval = setInterval(() => playChime(), 333);
             }
         }
 
         function pauseTimer() { stopLogic(); toggleUI('paused'); }
-        function stopLogic() { clearInterval(timerInterval); clearInterval(beepInterval); }
+        function stopLogic() { clearInterval(timerInterval); clearInterval(chimeInterval); }
         
         function finish() { 
             stopLogic(); 
-            playBeep(440, 2.0, 0.4); // Final long beep
+            playFinalBell();
             updateDisplay();
             toggleUI('idle'); 
         }

@@ -55,6 +55,7 @@
         .btn-pause { background: var(--orange); color: white; width: 100%; height: 80px; border-radius: 50px; }
         .btn-resume { background: var(--blue); color: white; flex: 1; height: 80px; border-radius: 50px; }
         .btn-cancel { background: var(--red); color: white; flex: 1; height: 80px; border-radius: 50px; }
+        .btn-exit { background: #444; color: white; width: 100%; font-size: 24px; border-radius: 50px; height: 80px; }
         
         .hidden { display: none; }
         .flex-row { display: flex; gap: 15px; width: 100%; }
@@ -66,13 +67,11 @@
         <div id="screen-menu">
             <h1>Jump Rope HIIT</h1>
             <p class="subtitle">20s Jump / 10s Rest Cycles</p>
-            
             <div class="weight-container">
                 <label>Body Weight</label>
                 <select id="weight-select" onchange="saveWeight()">
-                    </select>
+                </select>
             </div>
-
             <label style="text-align: left; margin-left: 5px;">Tap Duration to Start</label>
             <div class="menu-grid">
                 <button class="btn-choice" onclick="quickStart(5)">5 MIN</button>
@@ -100,8 +99,12 @@
             <div id="ui-paused" class="hidden">
                 <div class="flex-row">
                     <button class="btn-resume" onclick="startTimer()">RESUME</button>
-                    <button class="btn-cancel" onclick="showMenu()">CANCEL</button>
+                    <button class="btn-cancel" onclick="skipToEnd()">CANCEL</button>
                 </div>
+            </div>
+
+            <div id="ui-finished" class="hidden">
+                <button class="btn-exit" onclick="showMenu()">EXIT</button>
             </div>
         </div>
     </div>
@@ -160,6 +163,13 @@
             document.getElementById('screen-timer').classList.add('hidden');
         }
 
+        function skipToEnd() {
+            clearInterval(timerInterval);
+            timeLeft = 1; // Set to last second
+            updateDisplay();
+            startTimer(); // Auto-resume to play gong and show EXIT
+        }
+
         function updateDisplay() {
             document.getElementById('timer').innerText = timeLeft;
             document.getElementById('cal-count').innerText = calories.toFixed(1);
@@ -180,18 +190,12 @@
         function handleAudioLogic() {
             const elapsed = totalSeconds - timeLeft;
             const cyclePos = elapsed % 30;
-
-            // 1. Regular Heartbeat Chime (During Jump phase only)
-            if (cyclePos < 19) {
-                playSound(440, 0.4, 0.15); 
-            }
-            // 2. Rest is coming (Warning at 19 seconds)
+            if (cyclePos < 19) { playSound(440, 0.4, 0.15); }
             else if (cyclePos === 19) {
                 playSound(660, 0.1, 0.2);
                 setTimeout(() => playSound(660, 0.1, 0.2), 250);
                 setTimeout(() => playSound(660, 0.1, 0.2), 500);
             }
-            // 3. Work is starting (Alert at end of rest)
             else if (cyclePos === 29) {
                 playSound(880, 0.15, 0.25);
                 setTimeout(() => playSound(880, 0.15, 0.25), 200);
@@ -212,8 +216,7 @@
                     calories += (met * 3.5 * weight) / (200 * 60);
                     timeLeft--;
                     updateDisplay();
-                } else {
-                    finish();
+                    if (timeLeft === 0) finish();
                 }
             }, 1000);
         }
@@ -224,13 +227,14 @@
             clearInterval(timerInterval); 
             playSound(220, 3.0, 0.3); // Final Zen Gong
             updateDisplay();
-            toggleUI('idle'); 
+            toggleUI('finished'); 
         }
 
         function toggleUI(state) {
             document.getElementById('ui-idle').classList.toggle('hidden', state !== 'idle');
             document.getElementById('ui-running').classList.toggle('hidden', state !== 'running');
             document.getElementById('ui-paused').classList.toggle('hidden', state !== 'paused');
+            document.getElementById('ui-finished').classList.toggle('hidden', state !== 'finished');
         }
     </script>
 </body>

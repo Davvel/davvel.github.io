@@ -1,32 +1,179 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Jump Rope Timer</title>
-    <link rel="stylesheet" href="style.css">
-</head>
+    <style>
+        :root { --bg: #121212; --green: #4CAF50; --orange: #FF9800; --red: #f44336; --blue: #2196F3; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: white; margin: 0; display: flex; align-items: center; justify-content: center; height: 100vh; text-align: center; }
+        .container { width: 90%; max-width: 400px; }
+        
+        h1 { font-size: 28px; margin-bottom: 30px; color: var(--green); }
+        #timer { font-size: 100px; font-weight: bold; line-height: 1; margin: 10px 0; font-variant-numeric: tabular-nums; }
+        #calories { font-size: 20px; color: #888; margin-bottom: 30px; }
+        #status { font-size: 24px; font-weight: bold; letter-spacing: 2px; height: 40px; text-transform: uppercase; }
 
+        .menu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        button { border: none; padding: 20px; font-size: 18px; font-weight: bold; border-radius: 12px; cursor: pointer; transition: 0.2s; }
+        button:active { transform: scale(0.95); }
+        
+        .btn-start { background: var(--green); color: white; width: 100%; font-size: 24px; border-radius: 50px; }
+        .btn-pause { background: var(--orange); color: white; width: 100%; }
+        .btn-resume { background: var(--blue); color: white; flex: 1; }
+        .btn-cancel { background: var(--red); color: white; flex: 1; }
+        .btn-choice { background: #333; color: white; padding: 25px 10px; }
+        
+        .hidden { display: none; }
+        .flex-row { display: flex; gap: 10px; width: 100%; }
+    </style>
+</head>
 <body>
 
-    <div id="status">Ready?</div>
-    <div id="timer">300</div>
+    <div class="container">
+        <div id="screen-menu">
+            <h1>Jump Rope HIIT</h1>
+            <p>Select Workout Duration:</p>
+            <div class="menu-grid">
+                <button class="btn-choice" onclick="initTimer(5)">5 MIN</button>
+                <button class="btn-choice" onclick="initTimer(8)">8 MIN</button>
+                <button class="btn-choice" onclick="initTimer(10)">10 MIN</button>
+                <button class="btn-choice" onclick="initTimer(15)">15 MIN</button>
+                <button class="btn-choice" onclick="initTimer(20)">20 MIN</button>
+                <button class="btn-choice" onclick="initTimer(25)">25 MIN</button>
+                <button class="btn-choice" onclick="initTimer(30)" style="grid-column: span 2;">30 MIN</button>
+            </div>
+        </div>
 
-    <div id="ui-idle">
-        <button class="start" onclick="startTimer()">START</button>
+        <div id="screen-timer" class="hidden">
+            <div id="status">READY?</div>
+            <div id="timer">300</div>
+            <div id="calories">Calories: <span id="cal-count">0.0</span> kcal</div>
+
+            <div id="ui-idle">
+                <button class="btn-start" onclick="startTimer()">START</button>
+            </div>
+
+            <div id="ui-running" class="hidden">
+                <button class="btn-pause" onclick="pauseTimer()">PAUSE</button>
+            </div>
+
+            <div id="ui-paused" class="hidden">
+                <div class="flex-row">
+                    <button class="btn-resume" onclick="startTimer()">RESUME</button>
+                    <button class="btn-cancel" onclick="showMenu()">CANCEL</button>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <div id="ui-running" class="hidden">
-        <button class="pause" onclick="pauseTimer()">PAUSE</button>
-    </div>
+    <script>
+        let totalSeconds = 300;
+        let timeLeft = 300;
+        let calories = 0;
+        let timerInterval = null;
+        let beepInterval = null;
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
-    <div id="ui-paused" class="hidden">
-        <button class="resume" onclick="startTimer()">RESUME</button>
-        <button class="cancel" onclick="resetTimer()">CANCEL</button>
-    </div>
+        function playBeep(freq, duration, vol = 0.1) {
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.frequency.value = freq;
+            gain.gain.setValueAtTime(vol, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + duration);
+            osc.start();
+            osc.stop(audioCtx.currentTime + duration);
+        }
 
-    <script src="index.js"></script>
+        function initTimer(minutes) {
+            totalSeconds = minutes * 60;
+            timeLeft = totalSeconds;
+            calories = 0;
+            updateDisplay();
+            document.getElementById('screen-menu').classList.add('hidden');
+            document.getElementById('screen-timer').classList.remove('hidden');
+            toggleUI('idle');
+        }
+
+        function showMenu() {
+            resetLogic();
+            document.getElementById('screen-menu').classList.remove('hidden');
+            document.getElementById('screen-timer').classList.add('hidden');
+        }
+
+        function updateDisplay() {
+            document.getElementById('timer').innerText = timeLeft;
+            document.getElementById('cal-count').innerText = calories.toFixed(1);
+            
+            const elapsed = totalSeconds - timeLeft;
+            const cyclePos = elapsed % 30;
+            const isRest = cyclePos >= 20;
+            const statusLabel = document.getElementById('status');
+            
+            if (timeLeft <= 0) {
+                statusLabel.innerText = "FINISH!";
+                statusLabel.style.color = "var(--green)";
+            } else {
+                statusLabel.innerText = isRest ? "REST" : "JUMP!";
+                statusLabel.style.color = isRest ? "var(--orange)" : "var(--green)";
+            }
+        }
+
+        function startTimer() {
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            toggleUI('running');
+            
+            timerInterval = setInterval(() => {
+                if (timeLeft > 0) {
+                    const elapsed = totalSeconds - timeLeft;
+                    const isRest = (elapsed % 30) >= 20;
+                    
+                    // Calorie calculation: 0.25/sec jumping, 0.02/sec resting
+                    calories += isRest ? 0.02 : 0.25;
+                    
+                    timeLeft--;
+                    updateDisplay();
+                    handleBeeps();
+                } else {
+                    finish();
+                }
+            }, 1000);
+            handleBeeps();
+        }
+
+        function handleBeeps() {
+            clearInterval(beepInterval);
+            const elapsed = totalSeconds - timeLeft;
+            const cyclePos = elapsed % 30;
+            if (cyclePos < 20 && timeLeft > 0) {
+                beepInterval = setInterval(() => playBeep(880, 0.1), 333);
+            }
+        }
+
+        function pauseTimer() {
+            clearInterval(timerInterval);
+            clearInterval(beepInterval);
+            toggleUI('paused');
+        }
+
+        function resetLogic() {
+            clearInterval(timerInterval);
+            clearInterval(beepInterval);
+        }
+
+        function finish() {
+            resetLogic();
+            playBeep(440, 2.0, 0.3); // Final special beep
+            toggleUI('idle');
+        }
+
+        function toggleUI(state) {
+            document.getElementById('ui-idle').classList.toggle('hidden', state !== 'idle');
+            document.getElementById('ui-running').classList.toggle('hidden', state !== 'running');
+            document.getElementById('ui-paused').classList.toggle('hidden', state !== 'paused');
+        }
+    </script>
 </body>
-
 </html>

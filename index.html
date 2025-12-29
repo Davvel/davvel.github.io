@@ -1,22 +1,80 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Jump Rope HIIT Timer</title>
     <style>
-        body { font-family: sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; background: #121212; color: white; }
-        #timer { font-size: 120px; font-weight: bold; margin-bottom: 20px; font-variant-numeric: tabular-nums; }
-        #status { font-size: 24px; margin-bottom: 40px; text-transform: uppercase; letter-spacing: 2px; height: 30px; }
-        button { border: none; padding: 20px 40px; font-size: 24px; font-weight: bold; border-radius: 50px; cursor: pointer; width: 250px; margin: 10px; transition: transform 0.1s; }
-        button:active { transform: scale(0.95); }
-        .start { background: #4CAF50; color: white; }
-        .pause { background: #FF9800; color: white; }
-        .resume { background: #2196F3; color: white; }
-        .cancel { background: #f44336; color: white; }
-        .hidden { display: none; }
+        body {
+            font-family: sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            background: #121212;
+            color: white;
+        }
+
+        #timer {
+            font-size: 120px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            font-variant-numeric: tabular-nums;
+        }
+
+        #status {
+            font-size: 24px;
+            margin-bottom: 40px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            height: 30px;
+        }
+
+        button {
+            border: none;
+            padding: 20px 40px;
+            font-size: 24px;
+            font-weight: bold;
+            border-radius: 50px;
+            cursor: pointer;
+            width: 250px;
+            margin: 10px;
+            transition: transform 0.1s;
+        }
+
+        button:active {
+            transform: scale(0.95);
+        }
+
+        .start {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .pause {
+            background: #FF9800;
+            color: white;
+        }
+
+        .resume {
+            background: #2196F3;
+            color: white;
+        }
+
+        .cancel {
+            background: #f44336;
+            color: white;
+        }
+
+        .hidden {
+            display: none;
+        }
     </style>
 </head>
+
 <body>
 
     <div id="status">Ready?</div>
@@ -59,7 +117,7 @@
             const cyclePos = (300 - timeLeft) % 30;
             const isRest = cyclePos >= 20;
             const status = document.getElementById('status');
-            
+
             if (timeLeft <= 0) {
                 status.innerText = "DONE!";
                 status.style.color = "#4CAF50";
@@ -71,9 +129,9 @@
 
         function startTimer() {
             if (audioCtx.state === 'suspended') audioCtx.resume();
-            
+
             toggleUI('running');
-            
+
             timerInterval = setInterval(() => {
                 if (timeLeft > 0) {
                     timeLeft--;
@@ -83,14 +141,14 @@
                     finish();
                 }
             }, 1000);
-            
+
             handleBeeps(); // Initial check
         }
 
         function handleBeeps() {
             clearInterval(beepInterval);
             const cyclePos = (300 - timeLeft) % 30;
-            
+
             // Only beep during the first 20s of the 30s cycle
             if (cyclePos < 20 && timeLeft > 0) {
                 // Play 3 times per second
@@ -127,4 +185,5 @@
         }
     </script>
 </body>
+
 </html>

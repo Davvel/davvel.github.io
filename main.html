@@ -49,13 +49,8 @@
         .rope-notice { margin-bottom: 35px; line-height: 1.4; }
 
         .instruction-label { 
-            display: block; 
-            font-size: 12px; 
-            color: var(--green); 
-            font-weight: bold; 
-            text-transform: uppercase; 
-            margin-bottom: 12px; 
-            letter-spacing: 1px;
+            display: block; font-size: 12px; color: var(--green); font-weight: bold; 
+            text-transform: uppercase; margin-bottom: 12px; letter-spacing: 1px;
         }
 
         #timer { font-size: 110px; font-weight: 800; line-height: 1; margin: 10px 0; font-variant-numeric: tabular-nums; }
@@ -131,7 +126,7 @@
             <div id="ui-paused" class="hidden">
                 <div class="flex-row">
                     <button style="background:var(--blue); color:white; flex:1; height:75px; border-radius:50px;" onclick="startTimer()">RESUME</button>
-                    <button style="background:var(--red); color:white; flex:1; height:75px; border-radius:50px;" onclick="skipToEnd()">CANCEL</button>
+                    <button id="btn-cancel-action" style="background:var(--red); color:white; flex:1; height:75px; border-radius:50px;" onclick="skipToEnd()">CANCEL</button>
                 </div>
             </div>
             <div id="ui-finished" class="hidden"><button class="btn-start" style="background:#444" onclick="showMenu()">EXIT</button></div>
@@ -142,7 +137,7 @@
 
     <script>
         const appName = "QuickBurn HIIT";
-        const appVersion = "v1.3.11";
+        const appVersion = "v1.3.12";
 
         document.getElementById('app-name-header').innerText = appName.toUpperCase();
         document.getElementById('version-display').innerText = appVersion;
@@ -151,29 +146,16 @@
 
         let totalSeconds = 300, timeLeft = 300, calories = 0, timerInterval = null, audioCtx = null, wakeLock = null, isRunning = false, isPaused = false;
 
-        // Improved Wake Lock Persistence
         async function requestWakeLock() {
             if ('wakeLock' in navigator) {
-                try {
-                    wakeLock = await navigator.wakeLock.request('screen');
-                } catch (err) {
-                    console.error(`${err.name}, ${err.message}`);
-                }
+                try { wakeLock = await navigator.wakeLock.request('screen'); } catch (err) { console.error(`${err.name}, ${err.message}`); }
             }
         }
 
-        function releaseWakeLock() {
-            if (wakeLock !== null) {
-                wakeLock.release();
-                wakeLock = null;
-            }
-        }
+        function releaseWakeLock() { if (wakeLock !== null) { wakeLock.release(); wakeLock = null; } }
 
-        // Re-request lock if user tabs back or screen flickers
         document.addEventListener('visibilitychange', async () => {
-            if (wakeLock !== null && document.visibilityState === 'visible') {
-                await requestWakeLock();
-            }
+            if (wakeLock !== null && document.visibilityState === 'visible') { await requestWakeLock(); }
         });
 
         const weightSelect = document.getElementById('weight-select');
@@ -207,6 +189,7 @@
 
         function quickStart(mins) {
             saveWeight(); totalSeconds = mins * 60; timeLeft = totalSeconds; calories = 0; isRunning = false; isPaused = false;
+            document.getElementById('btn-cancel-action').classList.remove('hidden'); // Ensure cancel button is visible
             updateDisplay(); switchScreen('screen-timer'); toggleUI('idle');
             const statusLabel = document.getElementById('status');
             statusLabel.innerText = "GET READY";
@@ -227,6 +210,9 @@
             document.getElementById('cal-count').innerText = calories.toFixed(1);
             const statusLabel = document.getElementById('status');
             
+            // Hide cancel button if 3 seconds or less remain
+            if (timeLeft <= 3) { document.getElementById('btn-cancel-action').classList.add('hidden'); }
+
             if (!isRunning) return;
             if (isPaused) {
                 statusLabel.innerText = "PAUSED";
@@ -254,10 +240,9 @@
         }
 
         function startTimer() {
-            isRunning = true;
-            isPaused = false;
+            isRunning = true; isPaused = false;
             if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            requestWakeLock(); // Request Screen On
+            requestWakeLock();
             toggleUI('running');
             updateDisplay(); 
             
@@ -277,13 +262,7 @@
             }, 1000);
         }
 
-        function pauseTimer() { 
-            clearInterval(timerInterval); 
-            releaseWakeLock(); // Allow screen to dim when paused to save battery
-            isPaused = true; 
-            toggleUI('paused'); 
-            updateDisplay(); 
-        }
+        function pauseTimer() { clearInterval(timerInterval); releaseWakeLock(); isPaused = true; toggleUI('paused'); updateDisplay(); }
 
         function toggleUI(state) {
             document.getElementById('ui-idle').classList.toggle('hidden', state !== 'idle');

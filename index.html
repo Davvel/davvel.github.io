@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>QuickBurn Jump Tracker v1.1.6</title>
+    <title>QuickBurn Jump Tracker v1.2.1</title>
     <style>
         :root {
             --bg: #121212;
@@ -65,6 +65,7 @@
             flex-direction: column;
             position: relative;
             overflow: hidden;
+            padding-bottom: 60px; 
         }
 
         .screen {
@@ -75,8 +76,17 @@
         }
 
         #screen-menu { padding: 20px; overflow-y: auto; text-align: center; -webkit-overflow-scrolling: touch; }
-        #screen-timer { justify-content: center; align-items: center; text-align: center; }
-        #screen-history { text-align: left; background: var(--bg); }
+        
+        #screen-timer {
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+        #screen-history {
+            text-align: left;
+            background: var(--bg);
+        }
 
         h1 { font-size: 32px; margin: 20px 0 5px 0; color: var(--green); letter-spacing: -1px; }
         .subtitle { font-size: 14px; color: var(--text-dim); margin-bottom: 8px; }
@@ -113,6 +123,30 @@
         .btn-cancel { background: var(--red); color: white; flex: 1; height: 80px; border-radius: 50px; }
         .btn-exit { background: #444; color: white; width: 80%; font-size: 24px; border-radius: 50px; height: 80px; margin-top: 20px;}
 
+        .ad-banner {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 60px;
+            background: #000;
+            color: #444;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            border-top: 1px solid #2d3446;
+            z-index: 1000;
+        }
+
+        .privacy-link {
+            font-size: 10px;
+            color: var(--text-dim);
+            text-decoration: underline;
+            margin-top: 25px;
+            display: block;
+        }
+
         .history-header-bar {
             background: var(--header-bg);
             padding: 15px;
@@ -146,7 +180,7 @@
 <body>
 
     <div class="app-version-header">
-        QUICKBURN <span class="version-pill">v1.1.6</span>
+        QUICKBURN <span class="version-pill">v1.2.1</span>
     </div>
 
     <div class="container">
@@ -170,6 +204,7 @@
                 <button class="btn-choice" onclick="quickStart(30)">30 MIN</button>
             </div>
             <button class="btn-history" onclick="showHistory()">VIEW 90 DAY CALENDAR</button>
+            <a href="privacy.html" class="privacy-link">Privacy Policy</a>
         </div>
 
         <div id="screen-timer" class="screen hidden">
@@ -185,7 +220,7 @@
                     <button class="btn-cancel" onclick="skipToEnd()">CANCEL</button>
                 </div>
             </div>
-            <div id="ui-finished" class="hidden"><button class="btn-exit" onclick="showMenu()">EXIT</button></div>
+            <div id="ui-finished" class="hidden"><button class="btn-exit" onclick="showMenuWithAd()">EXIT</button></div>
         </div>
 
         <div id="screen-history" class="screen hidden">
@@ -198,28 +233,33 @@
         </div>
     </div>
 
+    <div class="ad-banner" id="ad-banner-slot">
+        AD BANNER SLOT (SENSE/ADMOB)
+    </div>
+
     <script>
-        let totalSeconds = 300, timeLeft = 300, calories = 0, timerInterval = null, audioCtx = null;
-        let wakeLock = null;
+        let totalSeconds = 300, timeLeft = 300, calories = 0, timerInterval = null, audioCtx = null, wakeLock = null;
 
-        // --- WAKE LOCK LOGIC ---
+        // --- AD INTEGRATION ---
+        function showInterstitialAd(callback) {
+            // Simulated delay for ad placeholder
+            setTimeout(callback, 500); 
+        }
+
+        function showMenuWithAd() {
+            clearInterval(timerInterval);
+            releaseWakeLock();
+            showInterstitialAd(() => switchScreen('screen-menu'));
+        }
+
+        // --- WAKE LOCK ---
         async function requestWakeLock() {
-            try {
-                if ('wakeLock' in navigator) {
-                    wakeLock = await navigator.wakeLock.request('screen');
-                }
-            } catch (err) {
-                console.log(`${err.name}, ${err.message}`);
-            }
+            try { if ('wakeLock' in navigator) wakeLock = await navigator.wakeLock.request('screen'); } 
+            catch (err) { console.log(err.message); }
         }
+        function releaseWakeLock() { if (wakeLock !== null) { wakeLock.release(); wakeLock = null; } }
 
-        function releaseWakeLock() {
-            if (wakeLock !== null) {
-                wakeLock.release();
-                wakeLock = null;
-            }
-        }
-
+        // --- WEIGHT INIT ---
         const weightSelect = document.getElementById('weight-select');
         for (let i = 45; i <= 150; i++) {
             let opt = document.createElement('option'); opt.value = i;
@@ -229,6 +269,7 @@
         weightSelect.value = localStorage.getItem('userWeight') || 75;
         function saveWeight() { localStorage.setItem('userWeight', weightSelect.value); }
 
+        // --- AUDIO ---
         function playSound(freq, duration, vol, type = 'sine') {
             if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
             if (audioCtx.state === 'suspended') audioCtx.resume();
@@ -241,22 +282,19 @@
             osc.start(); osc.stop(audioCtx.currentTime + duration);
         }
 
+        // --- DATA ---
         function getHistory() { return JSON.parse(localStorage.getItem('jumpRopeHistory') || '{}'); }
-
         function saveProgress(secs, kcals) {
             const history = getHistory();
             const today = new Date().toISOString().split('T')[0];
             if (!history[today]) history[today] = { seconds: 0, calories: 0 };
             history[today].seconds += secs; history[today].calories += kcals;
-            const keys = Object.keys(history).sort();
-            if (keys.length > 90) delete history[keys[0]];
             localStorage.setItem('jumpRopeHistory', JSON.stringify(history));
         }
 
         function showHistory() {
             const history = getHistory(); const content = document.getElementById('history-content');
-            content.innerHTML = '';
-            const today = new Date();
+            content.innerHTML = ''; const today = new Date();
             let currentMonth = -1, mSecs = 0, mCals = 0;
 
             for (let i = 0; i < 90; i++) {
@@ -280,7 +318,20 @@
                 content.appendChild(card);
                 if (i === 89) renderMonthSummary(content, mSecs, mCals);
             }
+
+            // Secure Reset Button
+            const resetCont = document.createElement('div');
+            resetCont.style.cssText = "margin-top:40px; padding:20px; text-align:center;";
+            resetCont.innerHTML = `<label style="color:var(--red); font-size:10px;">DANGER ZONE</label><button onclick="confirmReset()" style="background:transparent; color:var(--red); border:1px solid var(--red); width:100%; font-size:12px; padding:10px; border-radius:10px;">CLEAR ALL WORKOUT DATA</button>`;
+            content.appendChild(resetCont);
+
             switchScreen('screen-history');
+        }
+
+        function confirmReset() {
+            const challenge = prompt("This will permanently delete your history. To proceed, type 'SURE' in all capital letters:");
+            if (challenge === "SURE") { localStorage.removeItem('jumpRopeHistory'); alert("Data cleared."); showMenu(); }
+            else if (challenge !== null) alert("Reset cancelled.");
         }
 
         function renderMonthSummary(container, secs, cals) {
@@ -289,38 +340,31 @@
             container.appendChild(sum);
         }
 
+        // --- NAVIGATION ---
         function quickStart(mins) {
             saveWeight(); totalSeconds = mins * 60; timeLeft = totalSeconds; calories = 0;
             updateDisplay(); switchScreen('screen-timer'); toggleUI('idle');
         }
-
         function switchScreen(id) {
             document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
             document.getElementById(id).classList.remove('hidden');
         }
-
-        function showMenu() {
-            clearInterval(timerInterval);
-            releaseWakeLock();
-            switchScreen('screen-menu');
-        }
-
+        function showMenu() { clearInterval(timerInterval); releaseWakeLock(); switchScreen('screen-menu'); }
         function skipToEnd() { clearInterval(timerInterval); timeLeft = 1; updateDisplay(); startTimer(); }
 
+        // --- TIMER CORE ---
         function updateDisplay() {
             document.getElementById('timer').innerText = timeLeft;
             document.getElementById('cal-count').innerText = calories.toFixed(1);
             const cyclePos = (totalSeconds - timeLeft) % 30;
-            const isRest = cyclePos >= 20;
             const statusLabel = document.getElementById('status');
             if (timeLeft <= 0) { statusLabel.innerText = "DONE!"; statusLabel.style.color = "var(--green)"; }
-            else { statusLabel.innerText = isRest ? "REST" : "JUMP!"; statusLabel.style.color = isRest ? "var(--orange)" : "var(--green)"; }
+            else { statusLabel.innerText = cyclePos >= 20 ? "REST" : "JUMP!"; statusLabel.style.color = cyclePos >= 20 ? "var(--orange)" : "var(--green)"; }
         }
 
         function startTimer() {
             if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            requestWakeLock();
-            toggleUI('running');
+            requestWakeLock(); toggleUI('running');
             timerInterval = setInterval(() => {
                 if (timeLeft > 0) {
                     const elapsed = totalSeconds - timeLeft; const cyclePos = elapsed % 30;
@@ -336,12 +380,7 @@
             }, 1000);
         }
 
-        function pauseTimer() { 
-            clearInterval(timerInterval); 
-            releaseWakeLock();
-            toggleUI('paused'); 
-        }
-
+        function pauseTimer() { clearInterval(timerInterval); releaseWakeLock(); toggleUI('paused'); }
         function toggleUI(state) {
             document.getElementById('ui-idle').classList.toggle('hidden', state !== 'idle');
             document.getElementById('ui-running').classList.toggle('hidden', state !== 'running');

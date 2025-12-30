@@ -3,218 +3,71 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>QuickBurn HIIT</title>
-    
-    <link rel="manifest" href="manifest.json">
-    <link rel="apple-touch-icon" href="icon-512.png">
-    <meta name="theme-color" content="#4CAF50">
-
+    <title>QuickBurn HIIT Loading...</title>
     <style>
         :root {
-            --bg: #121212; --card-bg: #1e1e1e; --green: #4CAF50; --orange: #FF9800;
-            --red: #f44336; --blue: #2196F3; --text: #ffffff; --text-dim: #888888;
-            --header-bg: #1a1f2c; 
+            --bg: #121212;
+            --green: #4CAF50;
+            --text-dim: #888888;
         }
-
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            background-color: var(--bg); color: var(--text); margin: 0; padding: 0;
-            display: flex; flex-direction: column; height: 100vh; overflow: hidden; 
-            user-select: none; -webkit-tap-highlight-color: transparent;
+            background-color: var(--bg);
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            text-align: center;
+            overflow: hidden;
         }
-
-        .app-version-header {
-            background: var(--header-bg); padding: 12px; text-align: center;
-            border-bottom: 1px solid #2d3446; display: flex; justify-content: center;
-            align-items: center; gap: 10px; font-weight: bold; color: var(--green);
-            z-index: 100; flex-shrink: 0;
+        .splash-logo {
+            font-size: 42px;
+            font-weight: 800;
+            color: var(--green);
+            letter-spacing: -2px;
+            margin-bottom: 10px;
+            animation: pulse 1.5s infinite;
         }
-        .version-pill { background: var(--green); color: #000; padding: 2px 8px; border-radius: 12px; font-size: 10px; text-transform: uppercase; }
-
-        .container { flex: 1; width: 100%; max-width: 400px; margin: 0 auto; position: relative; overflow: hidden; }
-        .screen { position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: flex; flex-direction: column; overflow-y: auto; -webkit-overflow-scrolling: touch; }
-
-        #screen-menu { padding: 20px; text-align: center; }
-        #screen-timer { justify-content: center; align-items: center; padding: 20px; }
-
-        h1 { font-size: 32px; margin: 10px 0 5px 0; color: var(--green); letter-spacing: -1px; }
-        .subtitle { font-size: 14px; color: var(--text-dim); margin-bottom: 8px; }
-        
-        .efficiency-badge {
-            background: rgba(76, 175, 80, 0.1); color: var(--green); padding: 8px 15px;
-            border-radius: 20px; font-size: 11px; display: inline-block; margin-bottom: 20px;
-            font-weight: bold; border: 1px solid rgba(76, 175, 80, 0.3); text-transform: uppercase; cursor: pointer;
+        .splash-pitch {
+            color: var(--green);
+            opacity: 0.9;
+            font-weight: bold;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            font-size: 14px;
+            margin-bottom: 15px;
         }
-
-        #timer { font-size: 110px; font-weight: 800; line-height: 1; margin: 10px 0; font-variant-numeric: tabular-nums; }
-        #calories { font-size: 18px; color: var(--text-dim); margin-bottom: 30px; }
-        #status { font-size: 28px; font-weight: bold; letter-spacing: 3px; height: 35px; text-transform: uppercase; }
-
-        .weight-container { margin-bottom: 15px; text-align: left; background: var(--card-bg); padding: 15px; border-radius: 12px; border: 1px solid #333; }
-        label { display: block; font-size: 11px; color: var(--text-dim); margin-bottom: 8px; text-transform: uppercase; font-weight: bold; }
-        select { background: #2a2a2a; color: white; border: 1px solid #444; font-size: 18px; width: 100%; padding: 12px; border-radius: 8px; outline: none; appearance: none; }
-
-        .menu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        button { border: none; padding: 15px; font-size: 18px; font-weight: bold; border-radius: 15px; cursor: pointer; transition: transform 0.1s; }
-        
-        .btn-choice { background: var(--card-bg); color: white; border: 1px solid #333; height: 60px; }
-        .btn-start, .btn-pause { background: var(--green); color: white; width: 90%; font-size: 22px; border-radius: 50px; height: 75px; }
-        .btn-pause { background: var(--orange); }
-        .btn-secondary { background: transparent; color: var(--blue); border: 1px solid var(--blue); width: 100%; margin-top: 10px; font-size: 13px; padding: 15px; border-radius: 15px; }
-
-        .hidden { display: none !important; }
-        .flex-row { display: flex; gap: 15px; width: 90%; }
-        #ui-idle, #ui-running, #ui-paused, #ui-finished { width: 100%; display: flex; justify-content: center; }
-
-        .ad-banner { flex-shrink: 0; width: 100%; height: 60px; background: #000; color: #444; display: flex; align-items: center; justify-content: center; font-size: 10px; border-top: 1px solid #2d3446; z-index: 1000; }
+        .air-skip-tag {
+            color: var(--text-dim);
+            font-size: 10px;
+            letter-spacing: 2px;
+            border-top: 1px solid #333;
+            padding-top: 10px;
+            text-transform: uppercase;
+        }
+        @keyframes pulse { 
+            0% { transform: scale(1); } 
+            50% { transform: scale(1.05); } 
+            100% { transform: scale(1); } 
+        }
     </style>
 </head>
 <body>
-
-    <div class="app-version-header">
-        <span id="app-name-header"></span> <span class="version-pill" id="version-display"></span>
+    <div>
+        <div class="splash-logo" id="splash-name">QuickBurn HIIT</div>
+        <div class="splash-pitch">Just follow the Rhythm and burn the fat</div>
+        <div class="air-skip-tag">No rope? Just air-skip your fat away</div>
     </div>
-
-    <div class="container">
-        <div id="screen-menu" class="screen">
-            <h1 id="menu-name"></h1>
-            <p class="subtitle">The High Intensity Interval Training Metronome</p>
-            <div class="efficiency-badge" onclick="window.location.href='science.html'">SEE THE SCIENCE ➔</div>
-            
-            <div class="weight-container">
-                <label>BODY WEIGHT</label>
-                <select id="weight-select" onchange="saveWeight()"></select>
-            </div>
-
-            <div class="menu-grid">
-                <button class="btn-choice" onclick="quickStart(5)">5 MIN</button>
-                <button class="btn-choice" onclick="quickStart(10)">10 MIN</button>
-                <button class="btn-choice" onclick="quickStart(15)">15 MIN</button>
-                <button class="btn-choice" onclick="quickStart(20)">20 MIN</button>
-                <button class="btn-choice" onclick="quickStart(25)">25 MIN</button>
-                <button class="btn-choice" onclick="quickStart(30)">30 MIN</button>
-            </div>
-            
-            <button class="btn-secondary" onclick="window.location.href='history.html'">VIEW 90 DAY HISTORY</button>
-            <button class="btn-secondary" style="color:var(--text-dim); border-color:#333;" onclick="window.location.href='science.html'">WHY HIIT WORKS</button>
-            <a href="privacy.html" style="font-size: 11px; color: var(--text-dim); text-decoration: underline; margin-top: 20px; display: block;">Privacy Policy</a>
-        </div>
-
-        <div id="screen-timer" class="screen hidden">
-            <div id="status">READY?</div>
-            <div id="timer">300</div>
-            <div id="calories">KCAL BURNT: <span id="cal-count">0.0</span></div>
-            
-            <div id="ui-idle"><button class="btn-start" onclick="startTimer()">START JUMPING</button></div>
-            <div id="ui-running" class="hidden"><button class="btn-pause" onclick="pauseTimer()">PAUSE</button></div>
-            <div id="ui-paused" class="hidden">
-                <div class="flex-row">
-                    <button style="background:var(--blue); color:white; flex:1; height:75px; border-radius:50px;" onclick="startTimer()">RESUME</button>
-                    <button style="background:var(--red); color:white; flex:1; height:75px; border-radius:50px;" onclick="skipToEnd()">CANCEL</button>
-                </div>
-            </div>
-            <div id="ui-finished" class="hidden"><button class="btn-start" style="background:#444" onclick="showMenu()">EXIT</button></div>
-        </div>
-    </div>
-
-    <div class="ad-banner" id="ad-banner-slot">AD BANNER SLOT (SENSE/ADMOB)</div>
 
     <script>
-        // --- EASY CONFIGURATION ---
         const appName = "QuickBurn HIIT";
-        const appVersion = "v1.3.6";
+        document.getElementById('splash-name').innerText = appName;
 
-        // Global Update Logic
-        document.getElementById('app-name-header').innerText = appName.toUpperCase();
-        document.getElementById('version-display').innerText = appVersion;
-        document.getElementById('menu-name').innerText = appName;
-        document.title = `${appName} ${appVersion}`;
-
-        let totalSeconds = 300, timeLeft = 300, calories = 0, timerInterval = null, audioCtx = null, wakeLock = null;
-
-        async function requestWakeLock() {
-            try { if ('wakeLock' in navigator) wakeLock = await navigator.wakeLock.request('screen'); } 
-            catch (err) { console.log(err.message); }
-        }
-        function releaseWakeLock() { if (wakeLock !== null) { wakeLock.release(); wakeLock = null; } }
-
-        const weightSelect = document.getElementById('weight-select');
-        for (let i = 45; i <= 150; i++) {
-            let opt = document.createElement('option'); opt.value = i;
-            opt.innerHTML = i + ' kg (' + Math.round(i * 2.204) + ' lbs)';
-            weightSelect.appendChild(opt);
-        }
-        weightSelect.value = localStorage.getItem('userWeight') || 75;
-        function saveWeight() { localStorage.setItem('userWeight', weightSelect.value); }
-
-        function playSound(freq, duration, vol, type = 'sine') {
-            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            if (audioCtx.state === 'suspended') audioCtx.resume();
-            const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain();
-            osc.type = type; osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
-            gain.gain.setValueAtTime(0, audioCtx.currentTime);
-            gain.gain.linearRampToValueAtTime(vol, audioCtx.currentTime + 0.01);
-            gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + duration);
-            osc.connect(gain); gain.connect(audioCtx.destination);
-            osc.start(); osc.stop(audioCtx.currentTime + duration);
-        }
-
-        function getHistory() { return JSON.parse(localStorage.getItem('jumpRopeHistory') || '{}'); }
-        function saveProgress(secs, kcals) {
-            const history = getHistory(); const today = new Date().toISOString().split('T')[0];
-            if (!history[today]) history[today] = { seconds: 0, calories: 0 };
-            history[today].seconds += secs; history[today].calories += kcals;
-            localStorage.setItem('jumpRopeHistory', JSON.stringify(history));
-        }
-
-        function quickStart(mins) {
-            saveWeight(); totalSeconds = mins * 60; timeLeft = totalSeconds; calories = 0;
-            updateDisplay(); switchScreen('screen-timer'); toggleUI('idle');
-        }
-
-        function switchScreen(id) {
-            document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
-            document.getElementById(id).classList.remove('hidden');
-        }
-
-        function showMenu() { clearInterval(timerInterval); releaseWakeLock(); switchScreen('screen-menu'); }
-        function skipToEnd() { clearInterval(timerInterval); timeLeft = 1; updateDisplay(); startTimer(); }
-
-        function updateDisplay() {
-            document.getElementById('timer').innerText = timeLeft;
-            document.getElementById('cal-count').innerText = calories.toFixed(1);
-            const cyclePos = (totalSeconds - timeLeft) % 30;
-            const statusLabel = document.getElementById('status');
-            if (timeLeft <= 0) { statusLabel.innerText = "DONE!"; statusLabel.style.color = "var(--green)"; }
-            else { statusLabel.innerText = cyclePos >= 20 ? "REST" : "JUMP!"; statusLabel.style.color = cyclePos >= 20 ? "var(--orange)" : "var(--green)"; }
-        }
-
-        function startTimer() {
-            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            requestWakeLock(); toggleUI('running');
-            timerInterval = setInterval(() => {
-                if (timeLeft > 0) {
-                    const elapsed = totalSeconds - timeLeft; const cyclePos = elapsed % 30;
-                    if (cyclePos < 19) playSound(440, 0.4, 0.15); // Standard tick
-                    else if (cyclePos === 19) { // Rest Warning
-                        playSound(660, 0.1, 0.2); setTimeout(() => playSound(660, 0.1, 0.2), 250); setTimeout(() => playSound(660, 0.1, 0.2), 500); 
-                    } else if (cyclePos === 29) { // Jump Warning
-                        playSound(880, 0.15, 0.25); setTimeout(() => playSound(880, 0.15, 0.25), 200); 
-                    }
-                    const cStep = ((cyclePos >= 20 ? 1.2 : 12.3) * 3.5 * parseFloat(weightSelect.value)) / (200 * 60);
-                    calories += cStep; saveProgress(1, cStep); timeLeft--; updateDisplay();
-                    if (timeLeft === 0) { clearInterval(timerInterval); releaseWakeLock(); playSound(220, 3.0, 0.3); updateDisplay(); toggleUI('finished'); }
-                }
-            }, 1000);
-        }
-
-        function pauseTimer() { clearInterval(timerInterval); releaseWakeLock(); toggleUI('paused'); }
-        function toggleUI(state) {
-            document.getElementById('ui-idle').classList.toggle('hidden', state !== 'idle');
-            document.getElementById('ui-running').classList.toggle('hidden', state !== 'running');
-            document.getElementById('ui-paused').classList.toggle('hidden', state !== 'paused');
-            document.getElementById('ui-finished').classList.toggle('hidden', state !== 'finished');
-        }
+        // Auto-redirect to the Main Trainer page
+        setTimeout(() => {
+            window.location.href = "main.html";
+        }, 2500);
     </script>
 </body>
 </html>

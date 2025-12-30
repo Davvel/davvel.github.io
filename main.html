@@ -137,7 +137,7 @@
 
     <script>
         const appName = "QuickBurn HIIT";
-        const appVersion = "v1.3.13";
+        const appVersion = "v1.3.14";
 
         document.getElementById('app-name-header').innerText = appName.toUpperCase();
         document.getElementById('version-display').innerText = appVersion;
@@ -189,7 +189,7 @@
 
         function quickStart(mins) {
             saveWeight(); totalSeconds = mins * 60; timeLeft = totalSeconds; calories = 0; isRunning = false; isPaused = false;
-            document.getElementById('btn-pause-main').classList.remove('hidden'); // Ensure pause button is visible for new start
+            document.getElementById('btn-pause-main').classList.remove('hidden');
             updateDisplay(); switchScreen('screen-timer'); toggleUI('idle');
             const statusLabel = document.getElementById('status');
             statusLabel.innerText = "GET READY";
@@ -203,14 +203,19 @@
         }
 
         function showMenu() { clearInterval(timerInterval); releaseWakeLock(); switchScreen('screen-menu'); }
-        function skipToEnd() { clearInterval(timerInterval); timeLeft = 1; updateDisplay(); startTimer(); }
+        
+        // UPDATED: Now drops to 0 immediately
+        function skipToEnd() { 
+            clearInterval(timerInterval); 
+            timeLeft = 0; 
+            finishWorkout(); 
+        }
 
         function updateDisplay() {
             document.getElementById('timer').innerText = timeLeft;
             document.getElementById('cal-count').innerText = calories.toFixed(1);
             const statusLabel = document.getElementById('status');
             
-            // HIDE PAUSE BUTTON if 3 seconds or less remain
             if (timeLeft <= 3) { document.getElementById('btn-pause-main').classList.add('hidden'); }
 
             if (!isRunning) return;
@@ -239,6 +244,14 @@
             }
         }
 
+        function finishWorkout() {
+            isRunning = false;
+            releaseWakeLock(); 
+            playSound(220, 3.0, 0.3); 
+            updateDisplay(); 
+            toggleUI('finished');
+        }
+
         function startTimer() {
             isRunning = true; isPaused = false;
             if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -257,7 +270,7 @@
                     }
                     const cStep = ((cyclePos >= 20 ? 1.2 : 12.3) * 3.5 * parseFloat(weightSelect.value)) / (200 * 60);
                     calories += cStep; saveProgress(1, cStep); timeLeft--; updateDisplay();
-                    if (timeLeft === 0) { clearInterval(timerInterval); releaseWakeLock(); playSound(220, 3.0, 0.3); updateDisplay(); toggleUI('finished'); }
+                    if (timeLeft === 0) { clearInterval(timerInterval); finishWorkout(); }
                 }
             }, 1000);
         }

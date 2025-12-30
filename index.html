@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>QuickBurn Jump Tracker v1.2.3</title>
+    <title>QuickBurn Jump Tracker v1.2.4</title>
     <style>
         :root {
             --bg: #121212;
@@ -111,18 +111,21 @@
         .btn-cancel { background: var(--red); color: white; flex: 1; height: 75px; border-radius: 50px; }
         .btn-exit { background: #444; color: white; width: 90%; font-size: 22px; border-radius: 50px; height: 75px; margin-top: 15px;}
 
+        /* FIXED AD BANNER - ENFORCED VISIBILITY */
         .ad-banner {
             flex-shrink: 0;
             width: 100%;
             height: 60px;
             background: #000;
-            color: #444;
+            color: #4CAF50;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 10px;
+            font-size: 11px;
             border-top: 1px solid #2d3446;
-            z-index: 1000;
+            z-index: 9999;
+            position: relative;
+            text-align: center;
         }
 
         .privacy-link { font-size: 11px; color: var(--text-dim); text-decoration: underline; margin: 20px 0; display: block; }
@@ -154,7 +157,7 @@
 <body>
 
     <div class="app-version-header">
-        QUICKBURN <span class="version-pill">v1.2.3</span>
+        QUICKBURN <span class="version-pill">v1.2.4</span>
     </div>
 
     <div class="container">
@@ -178,7 +181,7 @@
             </div>
             <button class="btn-history" onclick="showHistory()">VIEW 90 DAY CALENDAR</button>
             <a href="privacy.html" class="privacy-link">Privacy Policy</a>
-            <div style="height: 50px;"></div>
+            <div style="height: 60px;"></div>
         </div>
 
         <div id="screen-timer" class="screen hidden">
@@ -191,7 +194,7 @@
             <div id="ui-paused" class="hidden">
                 <div class="flex-row">
                     <button class="btn-resume" onclick="startTimer()">RESUME</button>
-                    <button class="btn-cancel" onclick="skipToEnd()">CANCEL</button>
+                    <button class="btn-cancel" onclick="showMenuWithAd()">CANCEL</button>
                 </div>
             </div>
             <div id="ui-finished" class="hidden"><button class="btn-exit" onclick="showMenuWithAd()">EXIT</button></div>
@@ -208,14 +211,39 @@
     </div>
 
     <div class="ad-banner" id="ad-banner-slot">
-        AD BANNER SLOT (SENSE/ADMOB)
+        --- BANNER AD AREA ---<br>PASTE SENSE/ADMOB CODE HERE
     </div>
 
     <script>
+        // ==========================================
+        // ADVERTISING HOOKS (USE THESE LATER)
+        // ==========================================
+        
+        function triggerInterstitialAd(onAdClosed) {
+            console.log("Interstitial Triggered...");
+            
+            // 1. PLACE YOUR PROVIDER'S INTERSTITIAL CODE HERE
+            // Example for many providers: AdProvider.showInterstitial();
+            
+            // 2. SIMULATE AD DURATION (Remove alert/timeout when you have real code)
+            alert("INTERSTITIAL AD PLACEHOLDER\n\n(This triggers on Finish or Cancel)");
+            
+            setTimeout(() => {
+                onAdClosed(); // This returns the user to the menu
+            }, 500); 
+        }
+
+        // ==========================================
+        // APP LOGIC
+        // ==========================================
+
         let totalSeconds = 300, timeLeft = 300, calories = 0, timerInterval = null, audioCtx = null, wakeLock = null;
 
-        function showInterstitialAd(callback) { setTimeout(callback, 500); }
-        function showMenuWithAd() { clearInterval(timerInterval); releaseWakeLock(); showInterstitialAd(() => switchScreen('screen-menu')); }
+        function showMenuWithAd() { 
+            clearInterval(timerInterval); 
+            releaseWakeLock(); 
+            triggerInterstitialAd(() => switchScreen('screen-menu')); 
+        }
 
         async function requestWakeLock() {
             try { if ('wakeLock' in navigator) wakeLock = await navigator.wakeLock.request('screen'); } 
@@ -278,13 +306,13 @@
                 if (i === 89) renderMonthSummary(content, mSecs, mCals);
             }
 
-            // Secure Reset Button Area
             const resetCont = document.createElement('div');
             resetCont.style.cssText = "margin-top:40px; padding:20px; text-align:center;";
             resetCont.innerHTML = `
                 <label style="color:var(--red); font-size:10px;">DANGER ZONE</label>
                 <button onclick="confirmReset()" style="background:transparent; color:var(--red); border:1px solid var(--red); width:100%; font-size:12px; padding:10px; border-radius:10px;">CLEAR ALL WORKOUT DATA</button>
-                <div style="height: 70px;"></div> `;
+                <div style="height: 100px;"></div>
+            `;
             content.appendChild(resetCont);
 
             switchScreen('screen-history');

@@ -34,12 +34,6 @@
         .container { flex: 1; width: 100%; max-width: 400px; margin: 0 auto; position: relative; overflow: hidden; }
         .screen { position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: flex; flex-direction: column; overflow-y: auto; -webkit-overflow-scrolling: touch; }
 
-        #screen-splash { justify-content: center; align-items: center; background: var(--bg); z-index: 1000; text-align: center; padding: 20px; }
-        .splash-logo { font-size: 42px; font-weight: 800; color: var(--green); letter-spacing: -2px; margin-bottom: 10px; animation: pulse 1.5s infinite; }
-        .splash-pitch { color: var(--green); opacity: 0.9; font-weight: bold; letter-spacing: 1px; text-transform: uppercase; font-size: 14px; margin-bottom: 15px; }
-        .air-skip-tag { color: var(--text-dim); font-size: 10px; letter-spacing: 2px; border-top: 1px solid #333; padding-top: 10px; text-transform: uppercase; }
-        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
-
         #screen-menu { padding: 20px; text-align: center; }
         #screen-timer { justify-content: center; align-items: center; padding: 20px; }
         #screen-history { text-align: left; background: var(--bg); }
@@ -62,7 +56,7 @@
         select { background: #2a2a2a; color: white; border: 1px solid #444; font-size: 18px; width: 100%; padding: 12px; border-radius: 8px; outline: none; appearance: none; }
 
         .menu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        button { border: none; padding: 15px; font-size: 18px; font-weight: bold; border-radius: 15px; cursor: pointer; }
+        button { border: none; padding: 15px; font-size: 18px; font-weight: bold; border-radius: 15px; cursor: pointer; transition: transform 0.1s; }
         
         .btn-choice { background: var(--card-bg); color: white; border: 1px solid #333; height: 60px; }
         .btn-start, .btn-pause { background: var(--green); color: white; width: 90%; font-size: 22px; border-radius: 50px; height: 75px; }
@@ -91,13 +85,7 @@
     </div>
 
     <div class="container">
-        <div id="screen-splash" class="screen">
-            <div class="splash-logo" id="splash-name"></div>
-            <div class="splash-pitch">Just follow the Rhythm and burn the fat</div>
-            <div class="air-skip-tag">No rope? Just air-skip your fat away</div>
-        </div>
-
-        <div id="screen-menu" class="screen hidden">
+        <div id="screen-menu" class="screen">
             <h1 id="menu-name"></h1>
             <p class="subtitle">The High-Intensity Interval Metronome</p>
             <div class="efficiency-badge" onclick="window.location.href='science.html'">SEE THE SCIENCE ➔</div>
@@ -153,11 +141,8 @@
         // Global Update Logic
         document.getElementById('app-name-header').innerText = appName.toUpperCase();
         document.getElementById('version-display').innerText = appVersion;
-        document.getElementById('splash-name').innerText = appName;
         document.getElementById('menu-name').innerText = appName;
         document.title = `${appName} ${appVersion}`;
-
-        window.addEventListener('load', () => { setTimeout(() => { switchScreen('screen-menu'); }, 2500); });
 
         let totalSeconds = 300, timeLeft = 300, calories = 0, timerInterval = null, audioCtx = null, wakeLock = null;
 

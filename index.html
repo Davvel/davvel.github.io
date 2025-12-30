@@ -30,46 +30,64 @@
             -webkit-tap-highlight-color: transparent;
         }
 
-        .container { width: 95%; max-width: 400px; text-align: center; height: 95vh; display: flex; flex-direction: column; }
-        h1 { font-size: 28px; margin-bottom: 5px; color: var(--green); letter-spacing: -0.5px; }
-        .subtitle { font-size: 14px; color: var(--text-dim); margin-bottom: 20px; }
+        .container { width: 95%; max-width: 400px; text-align: center; height: 100vh; display: flex; flex-direction: column; position: relative; }
+        
+        /* Fixed Header for History */
+        .history-header {
+            background: var(--bg);
+            padding: 20px 10px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid #333;
+            z-index: 10;
+        }
+        .back-btn {
+            font-size: 30px;
+            color: var(--blue);
+            cursor: pointer;
+            padding: 0 10px;
+            font-weight: bold;
+        }
+
+        h1 { font-size: 24px; margin: 0; color: var(--green); flex-grow: 1; }
+        .subtitle { font-size: 14px; color: var(--text-dim); margin-bottom: 25px; }
 
         /* Timer Display */
         #timer { font-size: 110px; font-weight: 800; line-height: 1; margin: 10px 0; font-variant-numeric: tabular-nums; }
-        #calories { font-size: 20px; color: var(--text-dim); margin-bottom: 20px; }
+        #calories { font-size: 20px; color: var(--text-dim); margin-bottom: 40px; }
         #status { font-size: 32px; font-weight: bold; letter-spacing: 3px; height: 40px; text-transform: uppercase; }
 
-        /* Menu/Inputs */
-        .weight-container { margin-bottom: 15px; text-align: left; background: var(--card-bg); padding: 12px; border-radius: 12px; border: 1px solid #333; }
-        label { display: block; font-size: 11px; color: var(--text-dim); margin-bottom: 5px; text-transform: uppercase; font-weight: bold; }
-        select { background: #2a2a2a; color: white; border: 1px solid #444; font-size: 16px; width: 100%; padding: 10px; border-radius: 8px; outline: none; appearance: none; }
+        /* Inputs & Menu */
+        .weight-container { margin-bottom: 20px; text-align: left; background: var(--card-bg); padding: 15px; border-radius: 12px; border: 1px solid #333; }
+        label { display: block; font-size: 12px; color: var(--text-dim); margin-bottom: 8px; text-transform: uppercase; font-weight: bold; }
+        select { background: #2a2a2a; color: white; border: 1px solid #444; font-size: 18px; width: 100%; padding: 12px; border-radius: 8px; outline: none; appearance: none; }
 
-        .menu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        button { border: none; padding: 15px; font-size: 16px; font-weight: bold; border-radius: 15px; cursor: pointer; transition: transform 0.1s; }
-        button:active { transform: scale(0.95); }
+        .menu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        button { border: none; padding: 20px; font-size: 18px; font-weight: bold; border-radius: 15px; cursor: pointer; transition: transform 0.1s; }
         
-        .btn-choice { background: var(--card-bg); color: white; border: 1px solid #333; height: 60px; }
-        .btn-start { background: var(--green); color: white; width: 100%; font-size: 22px; border-radius: 50px; height: 70px; margin-top: 10px; }
-        .btn-history { background: transparent; color: var(--blue); border: 1px solid var(--blue); width: 100%; margin-top: 15px; font-size: 14px; }
-        .btn-pause { background: var(--orange); color: white; width: 100%; height: 75px; border-radius: 50px; }
-        .btn-resume { background: var(--blue); color: white; flex: 1; height: 75px; border-radius: 50px; }
-        .btn-cancel { background: var(--red); color: white; flex: 1; height: 75px; border-radius: 50px; }
-        .btn-exit { background: #444; color: white; width: 100%; font-size: 22px; border-radius: 50px; height: 70px; }
+        .btn-choice { background: var(--card-bg); color: white; border: 1px solid #333; height: 70px; }
+        .btn-start { background: var(--green); color: white; width: 100%; font-size: 24px; border-radius: 50px; height: 80px; }
+        .btn-history { background: transparent; color: var(--blue); border: 1px solid var(--blue); width: 100%; margin-top: 25px; font-size: 14px; padding: 15px; }
+        .btn-pause { background: var(--orange); color: white; width: 100%; height: 80px; border-radius: 50px; }
+        .btn-resume { background: var(--blue); color: white; flex: 1; height: 80px; border-radius: 50px; }
+        .btn-cancel { background: var(--red); color: white; flex: 1; height: 80px; border-radius: 50px; }
+        .btn-exit { background: #444; color: white; width: 100%; font-size: 24px; border-radius: 50px; height: 80px; margin-top: 20px;}
 
-        /* History Screen Styles */
-        #screen-history { overflow-y: auto; text-align: left; padding: 10px; height: 100%; }
-        .history-month-header { color: var(--green); font-size: 20px; font-weight: bold; margin: 20px 0 10px 5px; border-bottom: 1px solid #333; padding-bottom: 5px; }
-        .history-day-card { background: var(--card-bg); margin-bottom: 8px; padding: 12px; border-radius: 10px; display: flex; justify-content: space-between; align-items: center; border-left: 4px solid #333; }
+        /* History List Area */
+        #screen-history { height: 100%; display: flex; flex-direction: column; text-align: left; }
+        .scroll-area { flex-grow: 1; overflow-y: auto; padding: 10px; padding-bottom: 40px; }
+        
+        .history-month-header { color: var(--green); font-size: 20px; font-weight: bold; margin: 25px 0 10px 5px; border-bottom: 1px solid #333; padding-bottom: 5px; }
+        .history-day-card { background: var(--card-bg); margin-bottom: 10px; padding: 15px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; border-left: 5px solid #333; }
         .history-day-card.active { border-left-color: var(--green); }
-        .day-info { display: flex; flex-direction: column; }
-        .day-date { font-weight: bold; font-size: 16px; }
-        .day-name { font-size: 12px; color: var(--text-dim); }
-        .day-stats { text-align: right; }
-        .stat-main { font-weight: bold; color: var(--green); font-size: 16px; }
-        .stat-sub { font-size: 11px; color: var(--text-dim); }
-        .month-summary { background: #252525; padding: 15px; border-radius: 10px; margin: 15px 0; border: 1px dashed var(--green); }
+        .day-date { font-weight: bold; font-size: 18px; }
+        .day-name { font-size: 13px; color: var(--text-dim); }
+        .stat-main { font-weight: bold; color: var(--green); font-size: 18px; text-align: right; }
+        .stat-sub { font-size: 12px; color: var(--text-dim); text-align: right; }
+        .month-summary { background: #252525; padding: 15px; border-radius: 12px; margin: 20px 0; border: 1px dashed var(--green); }
         
-        .hidden { display: none; }
+        .hidden { display: none !important; }
         .flex-row { display: flex; gap: 15px; width: 100%; }
     </style>
 </head>
@@ -77,7 +95,7 @@
 
     <div class="container">
         <div id="screen-menu">
-            <h1>Jump Rope HIIT</h1>
+            <h1 style="margin-top: 40px;">Jump Rope HIIT</h1>
             <p class="subtitle">20s Jump / 10s Rest Cycles</p>
             <div class="weight-container">
                 <label>Body Weight</label>
@@ -93,183 +111,110 @@
                 <button class="btn-choice" onclick="quickStart(25)">25 MIN</button>
                 <button class="btn-choice" onclick="quickStart(30)">30 MIN</button>
             </div>
-            <button class="btn-history" onclick="showHistory()">VIEW LAST 90 DAY CALENDAR</button>
+            <button class="btn-history" onclick="showHistory()">VIEW 90 DAY CALENDAR</button>
         </div>
 
         <div id="screen-timer" class="hidden">
             <div id="status">READY?</div>
             <div id="timer">300</div>
             <div id="calories">KCAL BURNT: <span id="cal-count">0.0</span></div>
-
-            <div id="ui-idle">
-                <button class="btn-start" onclick="startTimer()">START JUMPING</button>
-            </div>
-
-            <div id="ui-running" class="hidden">
-                <button class="btn-pause" onclick="pauseTimer()">PAUSE</button>
-            </div>
-
+            <div id="ui-idle"><button class="btn-start" onclick="startTimer()">START JUMPING</button></div>
+            <div id="ui-running" class="hidden"><button class="btn-pause" onclick="pauseTimer()">PAUSE</button></div>
             <div id="ui-paused" class="hidden">
                 <div class="flex-row">
                     <button class="btn-resume" onclick="startTimer()">RESUME</button>
                     <button class="btn-cancel" onclick="skipToEnd()">CANCEL</button>
                 </div>
             </div>
-
-            <div id="ui-finished" class="hidden">
-                <button class="btn-exit" onclick="showMenu()">EXIT</button>
-            </div>
+            <div id="ui-finished" class="hidden"><button class="btn-exit" onclick="showMenu()">EXIT</button></div>
         </div>
 
         <div id="screen-history" class="hidden">
-            <h1 style="text-align:center">90 Day History</h1>
-            <div id="history-content"></div>
-            <button class="btn-exit" onclick="showMenu()" style="margin: 20px 0;">BACK TO MENU</button>
+            <div class="history-header">
+                <div class="back-btn" onclick="showMenu()">&lsaquo;</div>
+                <h1>90 Day History</h1>
+                <div style="width:40px"></div> </div>
+            <div class="scroll-area" id="history-content"></div>
         </div>
     </div>
 
     <script>
-        let totalSeconds = 300;
-        let timeLeft = 300;
-        let calories = 0;
-        let timerInterval = null;
-        let audioCtx = null;
-        let sessionSecondsTrained = 0;
-        let sessionCaloriesTrained = 0;
+        let totalSeconds = 300, timeLeft = 300, calories = 0, timerInterval = null, audioCtx = null;
 
-        // --- SETUP WEIGHT ---
         const weightSelect = document.getElementById('weight-select');
         for (let i = 45; i <= 150; i++) {
-            let opt = document.createElement('option');
-            opt.value = i;
+            let opt = document.createElement('option'); opt.value = i;
             opt.innerHTML = i + ' kg (' + Math.round(i * 2.204) + ' lbs)';
             weightSelect.appendChild(opt);
         }
-        const savedWeight = localStorage.getItem('userWeight') || 75;
-        weightSelect.value = savedWeight;
+        weightSelect.value = localStorage.getItem('userWeight') || 75;
         function saveWeight() { localStorage.setItem('userWeight', weightSelect.value); }
 
-        // --- AUDIO ENGINE ---
         function playSound(freq, duration, vol, type = 'sine') {
             if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
             if (audioCtx.state === 'suspended') audioCtx.resume();
-            const osc = audioCtx.createOscillator();
-            const gain = audioCtx.createGain();
-            osc.type = type;
-            osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+            const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain();
+            osc.type = type; osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
             gain.gain.setValueAtTime(0, audioCtx.currentTime);
             gain.gain.linearRampToValueAtTime(vol, audioCtx.currentTime + 0.01);
             gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + duration);
-            osc.connect(gain);
-            gain.connect(audioCtx.destination);
-            osc.start();
-            osc.stop(audioCtx.currentTime + duration);
+            osc.connect(gain); gain.connect(audioCtx.destination);
+            osc.start(); osc.stop(audioCtx.currentTime + duration);
         }
 
-        // --- HISTORY LOGIC ---
-        function getHistory() {
-            return JSON.parse(localStorage.getItem('jumpRopeHistory') || '{}');
-        }
+        function getHistory() { return JSON.parse(localStorage.getItem('jumpRopeHistory') || '{}'); }
 
-        function saveProgress(seconds, kcals) {
+        function saveProgress(secs, kcals) {
             const history = getHistory();
             const today = new Date().toISOString().split('T')[0];
-            
             if (!history[today]) history[today] = { seconds: 0, calories: 0 };
-            history[today].seconds += seconds;
-            history[today].calories += kcals;
-
-            // Cleanup: Keep only last 90 days
+            history[today].seconds += secs; history[today].calories += kcals;
             const keys = Object.keys(history).sort();
             if (keys.length > 90) delete history[keys[0]];
-
             localStorage.setItem('jumpRopeHistory', JSON.stringify(history));
         }
 
         function showHistory() {
-            const history = getHistory();
-            const content = document.getElementById('history-content');
+            const history = getHistory(); const content = document.getElementById('history-content');
             content.innerHTML = '';
-            
             const today = new Date();
-            let currentMonth = -1;
-            let monthSecs = 0;
-            let monthCals = 0;
+            let currentMonth = -1, mSecs = 0, mCals = 0;
 
-            // Generate list for last 90 days
             for (let i = 0; i < 90; i++) {
-                const date = new Date();
-                date.setDate(today.getDate() - i);
+                const date = new Date(); date.setDate(today.getDate() - i);
                 const dateKey = date.toISOString().split('T')[0];
                 const dayData = history[dateKey] || { seconds: 0, calories: 0 };
 
-                // Month Header Logic
                 if (date.getMonth() !== currentMonth) {
-                    if (currentMonth !== -1) {
-                        renderMonthSummary(content, monthSecs, monthCals);
-                        monthSecs = 0; monthCals = 0;
-                    }
-                    currentMonth = date.getMonth();
-                    const monthName = date.toLocaleString('default', { month: 'long' });
+                    if (currentMonth !== -1) renderMonthSummary(content, mSecs, mCals);
+                    currentMonth = date.getMonth(); mSecs = 0; mCals = 0;
                     const header = document.createElement('div');
                     header.className = 'history-month-header';
-                    header.innerText = monthName + " " + date.getFullYear();
+                    header.innerText = date.toLocaleString('default', { month: 'long' }) + " " + date.getFullYear();
                     content.appendChild(header);
                 }
+                mSecs += dayData.seconds; mCals += dayData.calories;
 
-                monthSecs += dayData.seconds;
-                monthCals += dayData.calories;
-
-                // Day Card
                 const card = document.createElement('div');
                 card.className = `history-day-card ${dayData.seconds > 0 ? 'active' : ''}`;
-                const mins = (dayData.seconds / 60).toFixed(1);
-                
-                card.innerHTML = `
-                    <div class="day-info">
-                        <div class="day-date">${date.getDate()} ${date.toLocaleString('default', { month: 'short' })}</div>
-                        <div class="day-name">${date.toLocaleDateString('en-US', { weekday: 'long' })}</div>
-                    </div>
-                    <div class="day-stats">
-                        <div class="stat-main">${mins} MIN</div>
-                        <div class="stat-sub">${dayData.calories.toFixed(1)} KCAL</div>
-                    </div>
-                `;
+                card.innerHTML = `<div class="day-info"><div class="day-date">${date.getDate()} ${date.toLocaleString('default', { month: 'short' })}</div><div class="day-name">${date.toLocaleDateString('en-US', { weekday: 'long' })}</div></div><div class="day-stats"><div class="stat-main">${(dayData.seconds / 60).toFixed(1)} MIN</div><div class="stat-sub">${dayData.calories.toFixed(1)} KCAL</div></div>`;
                 content.appendChild(card);
-                
-                // Final summary at the end of the loop
-                if (i === 89) renderMonthSummary(content, monthSecs, monthCals);
+                if (i === 89) renderMonthSummary(content, mSecs, mCals);
             }
-
             document.getElementById('screen-menu').classList.add('hidden');
             document.getElementById('screen-history').classList.remove('hidden');
         }
 
         function renderMonthSummary(container, secs, cals) {
-            const sum = document.createElement('div');
-            sum.className = 'month-summary';
-            sum.innerHTML = `
-                <label>Month Total</label>
-                <div style="display:flex; justify-content: space-between; font-weight: bold;">
-                    <span>${(secs / 60).toFixed(1)} Minutes</span>
-                    <span style="color:var(--green)">${cals.toFixed(1)} Kcal</span>
-                </div>
-            `;
+            const sum = document.createElement('div'); sum.className = 'month-summary';
+            sum.innerHTML = `<label>Month Total</label><div style="display:flex; justify-content: space-between; font-weight: bold;"><span>${(secs / 60).toFixed(1)} Minutes</span><span style="color:var(--green)">${cals.toFixed(1)} Kcal</span></div>`;
             container.appendChild(sum);
         }
 
-        // --- TIMER LOGIC ---
         function quickStart(mins) {
-            saveWeight();
-            totalSeconds = mins * 60;
-            timeLeft = totalSeconds;
-            calories = 0;
-            sessionSecondsTrained = 0;
-            sessionCaloriesTrained = 0;
-            updateDisplay();
-            document.getElementById('screen-menu').classList.add('hidden');
-            document.getElementById('screen-timer').classList.remove('hidden');
-            toggleUI('idle');
+            saveWeight(); totalSeconds = mins * 60; timeLeft = totalSeconds; calories = 0;
+            updateDisplay(); document.getElementById('screen-menu').classList.add('hidden');
+            document.getElementById('screen-timer').classList.remove('hidden'); toggleUI('idle');
         }
 
         function showMenu() {
@@ -279,79 +224,37 @@
             document.getElementById('screen-history').classList.add('hidden');
         }
 
-        function skipToEnd() {
-            clearInterval(timerInterval);
-            timeLeft = 1; 
-            updateDisplay();
-            startTimer(); 
-        }
+        function skipToEnd() { clearInterval(timerInterval); timeLeft = 1; updateDisplay(); startTimer(); }
 
         function updateDisplay() {
             document.getElementById('timer').innerText = timeLeft;
             document.getElementById('cal-count').innerText = calories.toFixed(1);
-            const elapsed = totalSeconds - timeLeft;
-            const cyclePos = elapsed % 30;
+            const cyclePos = (totalSeconds - timeLeft) % 30;
             const isRest = cyclePos >= 20;
             const statusLabel = document.getElementById('status');
-            
-            if (timeLeft <= 0) {
-                statusLabel.innerText = "DONE!";
-                statusLabel.style.color = "var(--green)";
-            } else {
-                statusLabel.innerText = isRest ? "REST" : "JUMP!";
-                statusLabel.style.color = isRest ? "var(--orange)" : "var(--green)";
-            }
-        }
-
-        function handleAudioLogic() {
-            const elapsed = totalSeconds - timeLeft;
-            const cyclePos = elapsed % 30;
-            if (cyclePos < 19) { playSound(440, 0.4, 0.15); }
-            else if (cyclePos === 19) {
-                playSound(660, 0.1, 0.2);
-                setTimeout(() => playSound(660, 0.1, 0.2), 250);
-                setTimeout(() => playSound(660, 0.1, 0.2), 500);
-            }
-            else if (cyclePos === 29) {
-                playSound(880, 0.15, 0.25);
-                setTimeout(() => playSound(880, 0.15, 0.25), 200);
-            }
+            if (timeLeft <= 0) { statusLabel.innerText = "DONE!"; statusLabel.style.color = "var(--green)"; }
+            else { statusLabel.innerText = isRest ? "REST" : "JUMP!"; statusLabel.style.color = isRest ? "var(--orange)" : "var(--green)"; }
         }
 
         function startTimer() {
             if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
             toggleUI('running');
-            const weight = parseFloat(weightSelect.value);
-            
             timerInterval = setInterval(() => {
                 if (timeLeft > 0) {
-                    handleAudioLogic();
-                    const elapsed = totalSeconds - timeLeft;
-                    const isRest = (elapsed % 30) >= 20;
-                    const met = isRest ? 1.2 : 12.3;
-                    
-                    const calStep = (met * 3.5 * weight) / (200 * 60);
-                    calories += calStep;
-                    
-                    // Track for history
-                    saveProgress(1, calStep);
+                    const elapsed = totalSeconds - timeLeft; const cyclePos = elapsed % 30;
+                    if (cyclePos < 19) playSound(440, 0.4, 0.15);
+                    else if (cyclePos === 19) { playSound(660, 0.1, 0.2); setTimeout(() => playSound(660, 0.1, 0.2), 250); setTimeout(() => playSound(660, 0.1, 0.2), 500); }
+                    else if (cyclePos === 29) { playSound(880, 0.15, 0.25); setTimeout(() => playSound(880, 0.15, 0.25), 200); }
 
-                    timeLeft--;
-                    updateDisplay();
-                    if (timeLeft === 0) finish();
+                    const isRest = cyclePos >= 20;
+                    const cStep = ((isRest ? 1.2 : 12.3) * 3.5 * parseFloat(weightSelect.value)) / (200 * 60);
+                    calories += cStep; saveProgress(1, cStep); timeLeft--; updateDisplay();
+                    if (timeLeft === 0) { clearInterval(timerInterval); playSound(220, 3.0, 0.3); updateDisplay(); toggleUI('finished'); }
                 }
             }, 1000);
         }
 
         function pauseTimer() { clearInterval(timerInterval); toggleUI('paused'); }
-        
-        function finish() { 
-            clearInterval(timerInterval); 
-            playSound(220, 3.0, 0.3); 
-            updateDisplay();
-            toggleUI('finished'); 
-        }
-
         function toggleUI(state) {
             document.getElementById('ui-idle').classList.toggle('hidden', state !== 'idle');
             document.getElementById('ui-running').classList.toggle('hidden', state !== 'running');

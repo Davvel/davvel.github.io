@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>QuickBurn HIIT v1.3.1</title>
+    <title>QuickBurn HIIT v1.3.2</title>
     
     <link rel="manifest" href="manifest.json">
     <link rel="apple-touch-icon" href="icon-512.png">
@@ -11,84 +11,33 @@
 
     <style>
         :root {
-            --bg: #121212;
-            --card-bg: #1e1e1e;
-            --green: #4CAF50;
-            --orange: #FF9800;
-            --red: #f44336;
-            --blue: #2196F3;
-            --text: #ffffff;
-            --text-dim: #888888;
+            --bg: #121212; --card-bg: #1e1e1e; --green: #4CAF50; --orange: #FF9800;
+            --red: #f44336; --blue: #2196F3; --text: #ffffff; --text-dim: #888888;
             --header-bg: #1a1f2c; 
         }
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            background-color: var(--bg);
-            color: var(--text);
-            margin: 0;
-            padding: 0;
-            display: flex;
-            flex-direction: column;
-            height: 100vh;
-            overflow: hidden; 
-            user-select: none;
-            -webkit-tap-highlight-color: transparent;
+            background-color: var(--bg); color: var(--text); margin: 0; padding: 0;
+            display: flex; flex-direction: column; height: 100vh; overflow: hidden; 
+            user-select: none; -webkit-tap-highlight-color: transparent;
         }
 
         .app-version-header {
-            background: var(--header-bg);
-            padding: 12px;
-            text-align: center;
-            border-bottom: 1px solid #2d3446;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 10px;
-            font-weight: bold;
-            color: var(--green);
-            z-index: 100;
-            flex-shrink: 0;
+            background: var(--header-bg); padding: 12px; text-align: center;
+            border-bottom: 1px solid #2d3446; display: flex; justify-content: center;
+            align-items: center; gap: 10px; font-weight: bold; color: var(--green);
+            z-index: 100; flex-shrink: 0;
         }
         .version-pill { background: var(--green); color: #000; padding: 2px 8px; border-radius: 12px; font-size: 10px; text-transform: uppercase; }
 
         .container { flex: 1; width: 100%; max-width: 400px; margin: 0 auto; position: relative; overflow: hidden; }
         .screen { position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: flex; flex-direction: column; overflow-y: auto; -webkit-overflow-scrolling: touch; }
 
-        /* SPLASH SCREEN */
-        #screen-splash {
-            justify-content: center;
-            align-items: center;
-            background: var(--bg);
-            z-index: 1000;
-            text-align: center;
-            padding: 20px;
-        }
-        .splash-logo {
-            font-size: 42px;
-            font-weight: 800;
-            color: var(--green);
-            letter-spacing: -2px;
-            margin-bottom: 10px;
-            animation: pulse 1.5s infinite;
-        }
-        .splash-pitch {
-            color: var(--green);
-            opacity: 0.9;
-            font-weight: bold;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            font-size: 14px;
-            margin-bottom: 15px;
-        }
-        .air-skip-tag {
-            color: var(--text-dim);
-            font-size: 10px;
-            letter-spacing: 2px;
-            border-top: 1px solid #333;
-            padding-top: 10px;
-            text-transform: uppercase;
-        }
+        #screen-splash { justify-content: center; align-items: center; background: var(--bg); z-index: 1000; text-align: center; padding: 20px; }
+        .splash-logo { font-size: 42px; font-weight: 800; color: var(--green); letter-spacing: -2px; margin-bottom: 10px; animation: pulse 1.5s infinite; }
+        .splash-pitch { color: var(--green); opacity: 0.9; font-weight: bold; letter-spacing: 1px; text-transform: uppercase; font-size: 14px; margin-bottom: 15px; }
+        .air-skip-tag { color: var(--text-dim); font-size: 10px; letter-spacing: 2px; border-top: 1px solid #333; padding-top: 10px; text-transform: uppercase; }
         @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
 
         #screen-menu { padding: 20px; text-align: center; }
@@ -99,17 +48,9 @@
         .subtitle { font-size: 14px; color: var(--text-dim); margin-bottom: 8px; }
         
         .efficiency-badge {
-            background: rgba(76, 175, 80, 0.1);
-            color: var(--green);
-            padding: 8px 15px;
-            border-radius: 20px;
-            font-size: 11px;
-            display: inline-block;
-            margin-bottom: 20px;
-            font-weight: bold;
-            border: 1px solid rgba(76, 175, 80, 0.3);
-            text-transform: uppercase;
-            cursor: pointer;
+            background: rgba(76, 175, 80, 0.1); color: var(--green); padding: 8px 15px;
+            border-radius: 20px; font-size: 11px; display: inline-block; margin-bottom: 20px;
+            font-weight: bold; border: 1px solid rgba(76, 175, 80, 0.3); text-transform: uppercase; cursor: pointer;
         }
 
         #timer { font-size: 110px; font-weight: 800; line-height: 1; margin: 10px 0; font-variant-numeric: tabular-nums; }
@@ -121,16 +62,21 @@
         select { background: #2a2a2a; color: white; border: 1px solid #444; font-size: 18px; width: 100%; padding: 12px; border-radius: 8px; outline: none; appearance: none; }
 
         .menu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        button { border: none; padding: 15px; font-size: 18px; font-weight: bold; border-radius: 15px; cursor: pointer; }
+        button { border: none; padding: 15px; font-size: 18px; font-weight: bold; border-radius: 15px; cursor: pointer; transition: transform 0.1s; }
         
         .btn-choice { background: var(--card-bg); color: white; border: 1px solid #333; height: 60px; }
-        .btn-start { background: var(--green); color: white; width: 90%; font-size: 22px; border-radius: 50px; height: 75px; }
+        .btn-start, .btn-pause { background: var(--green); color: white; width: 90%; font-size: 22px; border-radius: 50px; height: 75px; }
+        .btn-pause { background: var(--orange); }
         .btn-secondary { background: transparent; color: var(--blue); border: 1px solid var(--blue); width: 100%; margin-top: 10px; font-size: 13px; padding: 15px; border-radius: 15px; }
-        
-        .history-header-bar {
-            background: var(--header-bg); padding: 15px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #2d3446; position: sticky; top: 0; z-index: 10;
-        }
+
+        /* Restored History Styles */
+        .history-header-bar { background: var(--header-bg); padding: 15px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #2d3446; position: sticky; top: 0; z-index: 10; }
         .back-btn { font-size: 30px; color: var(--blue); cursor: pointer; padding: 0 10px; font-weight: bold; }
+        .history-month-header { color: var(--green); font-size: 20px; font-weight: bold; margin: 25px 0 10px 5px; border-bottom: 1px solid #333; padding-bottom: 5px; }
+        .history-day-card { background: var(--card-bg); margin-bottom: 10px; padding: 15px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; border-left: 5px solid #333; }
+        .history-day-card.active { border-left-color: var(--green); }
+        .stat-main { font-weight: bold; color: var(--green); font-size: 18px; text-align: right; }
+        .month-summary { background: #252525; padding: 15px; border-radius: 12px; margin: 20px 0; border: 1px dashed var(--green); }
 
         .hidden { display: none !important; }
         .flex-row { display: flex; gap: 15px; width: 90%; }
@@ -139,7 +85,7 @@
 </head>
 <body>
 
-    <div class="app-version-header">QUICKBURN HIIT <span class="version-pill">v1.3.1</span></div>
+    <div class="app-version-header">QUICKBURN HIIT <span class="version-pill">v1.3.2</span></div>
 
     <div class="container">
         <div id="screen-splash" class="screen">
@@ -152,12 +98,10 @@
             <h1>QuickBurn HIIT</h1>
             <p class="subtitle">The High-Intensity Interval Metronome</p>
             <div class="efficiency-badge" onclick="window.location.href='science.html'">SEE THE SCIENCE ➔</div>
-            
             <div class="weight-container">
                 <label>BODY WEIGHT</label>
                 <select id="weight-select" onchange="saveWeight()"></select>
             </div>
-
             <div class="menu-grid">
                 <button class="btn-choice" onclick="quickStart(5)">5 MIN</button>
                 <button class="btn-choice" onclick="quickStart(10)">10 MIN</button>
@@ -166,7 +110,6 @@
                 <button class="btn-choice" onclick="quickStart(25)">25 MIN</button>
                 <button class="btn-choice" onclick="quickStart(30)">30 MIN</button>
             </div>
-            
             <button class="btn-secondary" onclick="showHistory()">VIEW 90 DAY HISTORY</button>
             <button class="btn-secondary" style="color:var(--text-dim); border-color:#333;" onclick="window.location.href='science.html'">WHY HIIT WORKS</button>
         </div>
@@ -175,7 +118,6 @@
             <div id="status">READY?</div>
             <div id="timer">300</div>
             <div id="calories">KCAL BURNT: <span id="cal-count">0.0</span></div>
-            
             <div id="ui-idle"><button class="btn-start" onclick="startTimer()">START JUMPING</button></div>
             <div id="ui-running" class="hidden"><button class="btn-pause" onclick="pauseTimer()">PAUSE</button></div>
             <div id="ui-paused" class="hidden">
@@ -217,23 +159,57 @@
         weightSelect.value = localStorage.getItem('userWeight') || 75;
         function saveWeight() { localStorage.setItem('userWeight', weightSelect.value); }
 
-        function playSound(freq, duration, vol) {
+        /* Restored Complex Audio Engine */
+        function playSound(freq, duration, vol, type = 'sine') {
             if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
             if (audioCtx.state === 'suspended') audioCtx.resume();
             const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain();
-            osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
-            gain.gain.setValueAtTime(vol, audioCtx.currentTime);
+            osc.type = type; osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+            gain.gain.setValueAtTime(0, audioCtx.currentTime);
+            gain.gain.linearRampToValueAtTime(vol, audioCtx.currentTime + 0.01);
+            gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + duration);
             osc.connect(gain); gain.connect(audioCtx.destination);
             osc.start(); osc.stop(audioCtx.currentTime + duration);
         }
 
+        /* Restored History Data Engine */
         function getHistory() { return JSON.parse(localStorage.getItem('jumpRopeHistory') || '{}'); }
         function saveProgress(secs, kcals) {
-            const history = getHistory();
-            const today = new Date().toISOString().split('T')[0];
+            const history = getHistory(); const today = new Date().toISOString().split('T')[0];
             if (!history[today]) history[today] = { seconds: 0, calories: 0 };
             history[today].seconds += secs; history[today].calories += kcals;
             localStorage.setItem('jumpRopeHistory', JSON.stringify(history));
+        }
+
+        function renderMonthSummary(container, secs, cals) {
+            const sum = document.createElement('div'); sum.className = 'month-summary';
+            sum.innerHTML = `<label>Month Total</label><div style="display:flex; justify-content: space-between; font-weight: bold;"><span>${(secs / 60).toFixed(1)} Minutes</span><span style="color:var(--green)">${cals.toFixed(1)} Kcal</span></div>`;
+            container.appendChild(sum);
+        }
+
+        function showHistory() {
+            const history = getHistory(); const content = document.getElementById('history-content');
+            content.innerHTML = ''; const today = new Date();
+            let currentMonth = -1, mSecs = 0, mCals = 0;
+
+            for (let i = 0; i < 90; i++) {
+                const date = new Date(); date.setDate(today.getDate() - i);
+                const dateKey = date.toISOString().split('T')[0];
+                const dayData = history[dateKey] || { seconds: 0, calories: 0 };
+                if (date.getMonth() !== currentMonth) {
+                    if (currentMonth !== -1) renderMonthSummary(content, mSecs, mCals);
+                    currentMonth = date.getMonth(); mSecs = 0; mCals = 0;
+                    const header = document.createElement('div'); header.className = 'history-month-header';
+                    header.innerText = date.toLocaleString('default', { month: 'long' }) + " " + date.getFullYear();
+                    content.appendChild(header);
+                }
+                mSecs += dayData.seconds; mCals += dayData.calories;
+                const card = document.createElement('div');
+                card.className = `history-day-card ${dayData.seconds > 0 ? 'active' : ''}`;
+                card.innerHTML = `<div class="day-info"><div class="day-date">${date.getDate()} ${date.toLocaleString('default', { month: 'short' })}</div><div class="day-name">${date.toLocaleDateString('en-US', { weekday: 'long' })}</div></div><div class="day-stats"><div class="stat-main">${(dayData.seconds / 60).toFixed(1)} MIN</div><div class="stat-sub">${dayData.calories.toFixed(1)} KCAL</div></div>`;
+                content.appendChild(card);
+            }
+            switchScreen('screen-history');
         }
 
         function quickStart(mins) {
@@ -257,15 +233,22 @@
             else { statusLabel.innerText = cyclePos >= 20 ? "REST" : "JUMP!"; statusLabel.style.color = cyclePos >= 20 ? "var(--orange)" : "var(--green)"; }
         }
 
+        /* Restored Multi-Tone Start/Rest Signals */
         function startTimer() {
+            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
             requestWakeLock(); toggleUI('running');
             timerInterval = setInterval(() => {
                 if (timeLeft > 0) {
                     const elapsed = totalSeconds - timeLeft; const cyclePos = elapsed % 30;
-                    if (cyclePos === 0 || cyclePos === 20) playSound(880, 0.2, 0.1);
+                    if (cyclePos < 19) playSound(440, 0.4, 0.15); // Standard tick
+                    else if (cyclePos === 19) { // Rest Warning
+                        playSound(660, 0.1, 0.2); setTimeout(() => playSound(660, 0.1, 0.2), 250); 
+                    } else if (cyclePos === 29) { // Jump Warning
+                        playSound(880, 0.15, 0.25); setTimeout(() => playSound(880, 0.15, 0.25), 200);
+                    }
                     const cStep = ((cyclePos >= 20 ? 1.2 : 12.3) * 3.5 * parseFloat(weightSelect.value)) / (200 * 60);
                     calories += cStep; saveProgress(1, cStep); timeLeft--; updateDisplay();
-                    if (timeLeft === 0) { clearInterval(timerInterval); releaseWakeLock(); toggleUI('finished'); }
+                    if (timeLeft === 0) { clearInterval(timerInterval); releaseWakeLock(); playSound(220, 3.0, 0.3); toggleUI('finished'); }
                 }
             }, 1000);
         }
@@ -277,8 +260,6 @@
             document.getElementById('ui-paused').classList.toggle('hidden', state !== 'paused');
             document.getElementById('ui-finished').classList.toggle('hidden', state !== 'finished');
         }
-
-        function showHistory() { switchScreen('screen-history'); }
     </script>
 </body>
 </html>

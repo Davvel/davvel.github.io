@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>QuickBurn Jump Tracker v1.2.2</title>
+    <title>QuickBurn Jump Tracker v1.2.3</title>
     <style>
         :root {
             --bg: #121212;
@@ -25,13 +25,12 @@
             padding: 0;
             display: flex;
             flex-direction: column;
-            height: 100vh; /* Full viewport height */
+            height: 100vh;
             overflow: hidden; 
             user-select: none;
             -webkit-tap-highlight-color: transparent;
         }
 
-        /* Fixed Header */
         .app-version-header {
             background: var(--header-bg);
             padding: 12px;
@@ -55,7 +54,6 @@
             text-transform: uppercase;
         }
 
-        /* Main Container: Occupies space between header and ad */
         .container { 
             flex: 1;
             width: 100%; 
@@ -65,25 +63,18 @@
             overflow: hidden;
         }
 
-        /* Universal Screen Style */
         .screen {
             position: absolute;
             top: 0; left: 0; right: 0; bottom: 0;
             display: flex;
             flex-direction: column;
-            overflow-y: auto; /* Enable scrolling for content if it exceeds height */
+            overflow-y: auto;
             -webkit-overflow-scrolling: touch;
         }
 
-        /* Menu Screen Padding */
         #screen-menu { padding: 20px; text-align: center; }
-        
-        /* Timer Screen: Still centered, but scrollable if needed on tiny phones */
-        #screen-timer {
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-        }
+        #screen-timer { justify-content: center; align-items: center; padding: 20px; }
+        #screen-history { text-align: left; background: var(--bg); }
 
         h1 { font-size: 32px; margin: 10px 0 5px 0; color: var(--green); letter-spacing: -1px; }
         .subtitle { font-size: 14px; color: var(--text-dim); margin-bottom: 8px; }
@@ -120,7 +111,6 @@
         .btn-cancel { background: var(--red); color: white; flex: 1; height: 75px; border-radius: 50px; }
         .btn-exit { background: #444; color: white; width: 90%; font-size: 22px; border-radius: 50px; height: 75px; margin-top: 15px;}
 
-        /* Fixed Ad Banner */
         .ad-banner {
             flex-shrink: 0;
             width: 100%;
@@ -164,7 +154,7 @@
 <body>
 
     <div class="app-version-header">
-        QUICKBURN <span class="version-pill">v1.2.2</span>
+        QUICKBURN <span class="version-pill">v1.2.3</span>
     </div>
 
     <div class="container">
@@ -175,8 +165,7 @@
             
             <div class="weight-container">
                 <label>Body Weight</label>
-                <select id="weight-select" onchange="saveWeight()">
-                </select>
+                <select id="weight-select" onchange="saveWeight()"></select>
             </div>
             <label style="text-align: left; margin-left: 5px;">Tap Duration to Start</label>
             <div class="menu-grid">
@@ -189,6 +178,7 @@
             </div>
             <button class="btn-history" onclick="showHistory()">VIEW 90 DAY CALENDAR</button>
             <a href="privacy.html" class="privacy-link">Privacy Policy</a>
+            <div style="height: 50px;"></div>
         </div>
 
         <div id="screen-timer" class="screen hidden">
@@ -213,7 +203,7 @@
                 <div style="font-weight: bold; color: var(--green);">90 DAY HISTORY</div>
                 <div style="width:40px"></div>
             </div>
-            <div id="history-content" style="padding: 10px; padding-bottom: 30px;"></div>
+            <div id="history-content" style="padding: 10px;"></div>
         </div>
     </div>
 
@@ -288,9 +278,13 @@
                 if (i === 89) renderMonthSummary(content, mSecs, mCals);
             }
 
+            // Secure Reset Button Area
             const resetCont = document.createElement('div');
             resetCont.style.cssText = "margin-top:40px; padding:20px; text-align:center;";
-            resetCont.innerHTML = `<label style="color:var(--red); font-size:10px;">DANGER ZONE</label><button onclick="confirmReset()" style="background:transparent; color:var(--red); border:1px solid var(--red); width:100%; font-size:12px; padding:10px; border-radius:10px;">CLEAR ALL WORKOUT DATA</button>`;
+            resetCont.innerHTML = `
+                <label style="color:var(--red); font-size:10px;">DANGER ZONE</label>
+                <button onclick="confirmReset()" style="background:transparent; color:var(--red); border:1px solid var(--red); width:100%; font-size:12px; padding:10px; border-radius:10px;">CLEAR ALL WORKOUT DATA</button>
+                <div style="height: 70px;"></div> `;
             content.appendChild(resetCont);
 
             switchScreen('screen-history');

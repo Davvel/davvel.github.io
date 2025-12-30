@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>QuickBurn Jump Tracker v1.2.4</title>
+    <title>QuickBurn Jump Tracker v1.2.5</title>
     <style>
         :root {
             --bg: #121212;
@@ -31,6 +31,7 @@
             -webkit-tap-highlight-color: transparent;
         }
 
+        /* Fixed App Header */
         .app-version-header {
             background: var(--header-bg);
             padding: 12px;
@@ -72,6 +73,31 @@
             -webkit-overflow-scrolling: touch;
         }
 
+        /* SPLASH SCREEN STYLE */
+        #screen-splash {
+            justify-content: center;
+            align-items: center;
+            background: var(--bg);
+            z-index: 1000;
+            text-align: center;
+        }
+
+        .splash-logo {
+            font-size: 48px;
+            font-weight: 800;
+            color: var(--green);
+            letter-spacing: -2px;
+            margin-bottom: 10px;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.05); opacity: 0.8; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        /* Home Screen */
         #screen-menu { padding: 20px; text-align: center; }
         #screen-timer { justify-content: center; align-items: center; padding: 20px; }
         #screen-history { text-align: left; background: var(--bg); }
@@ -111,7 +137,7 @@
         .btn-cancel { background: var(--red); color: white; flex: 1; height: 75px; border-radius: 50px; }
         .btn-exit { background: #444; color: white; width: 90%; font-size: 22px; border-radius: 50px; height: 75px; margin-top: 15px;}
 
-        /* FIXED AD BANNER - ENFORCED VISIBILITY */
+        /* FIXED AD BANNER */
         .ad-banner {
             flex-shrink: 0;
             width: 100%;
@@ -157,11 +183,16 @@
 <body>
 
     <div class="app-version-header">
-        QUICKBURN <span class="version-pill">v1.2.4</span>
+        QUICKBURN <span class="version-pill">v1.2.5</span>
     </div>
 
     <div class="container">
-        <div id="screen-menu" class="screen">
+        <div id="screen-splash" class="screen">
+            <div class="splash-logo">QuickBurn</div>
+            <div class="subtitle" style="color: var(--green); opacity: 0.7;">LOADING YOUR TRAINING...</div>
+        </div>
+
+        <div id="screen-menu" class="screen hidden">
             <h1>QuickBurn</h1>
             <p class="subtitle">Jump Rope Calorie Tracker</p>
             <div class="efficiency-badge">The fastest way to burn calories</div>
@@ -211,31 +242,23 @@
     </div>
 
     <div class="ad-banner" id="ad-banner-slot">
-        --- BANNER AD AREA ---<br>PASTE SENSE/ADMOB CODE HERE
+        AD BANNER SLOT (SENSE/ADMOB)
     </div>
 
     <script>
-        // ==========================================
-        // ADVERTISING HOOKS (USE THESE LATER)
-        // ==========================================
-        
+        // AD HOOKS
         function triggerInterstitialAd(onAdClosed) {
             console.log("Interstitial Triggered...");
-            
-            // 1. PLACE YOUR PROVIDER'S INTERSTITIAL CODE HERE
-            // Example for many providers: AdProvider.showInterstitial();
-            
-            // 2. SIMULATE AD DURATION (Remove alert/timeout when you have real code)
-            alert("INTERSTITIAL AD PLACEHOLDER\n\n(This triggers on Finish or Cancel)");
-            
-            setTimeout(() => {
-                onAdClosed(); // This returns the user to the menu
-            }, 500); 
+            alert("INTERSTITIAL AD PLACEHOLDER"); // Remove for production
+            setTimeout(onAdClosed, 500); 
         }
 
-        // ==========================================
-        // APP LOGIC
-        // ==========================================
+        // APP INIT & SPLASH LOGIC
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                switchScreen('screen-menu');
+            }, 2500); // 2.5 second splash
+        });
 
         let totalSeconds = 300, timeLeft = 300, calories = 0, timerInterval = null, audioCtx = null, wakeLock = null;
 

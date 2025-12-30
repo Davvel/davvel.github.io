@@ -50,7 +50,20 @@
         #calories { font-size: 18px; color: var(--text-dim); margin-bottom: 30px; }
         #status { font-size: 28px; font-weight: bold; letter-spacing: 3px; height: 35px; text-transform: uppercase; }
 
-        .weight-container { margin-bottom: 15px; text-align: left; background: var(--card-bg); padding: 15px; border-radius: 12px; border: 1px solid #333; }
+        /* Specific spacing for Rope Text and weight-container */
+        .rope-notice { margin-bottom: 30px; }
+        .weight-container { margin-bottom: 25px; text-align: left; background: var(--card-bg); padding: 15px; border-radius: 12px; border: 1px solid #333; }
+        
+        .instruction-label { 
+            display: block; 
+            font-size: 12px; 
+            color: var(--green); 
+            font-weight: bold; 
+            text-transform: uppercase; 
+            margin-bottom: 12px; 
+            letter-spacing: 1px;
+        }
+
         label { display: block; font-size: 11px; color: var(--text-dim); margin-bottom: 8px; text-transform: uppercase; font-weight: bold; }
         select { background: #2a2a2a; color: white; border: 1px solid #444; font-size: 18px; width: 100%; padding: 12px; border-radius: 8px; outline: none; appearance: none; }
 
@@ -79,14 +92,14 @@
         <div id="screen-menu" class="screen">
             <h1 id="menu-name"></h1>
             <p class="subtitle">The High Intensity Interval Training Metronome</p>
-            <p class="subtitle">No need for a Rope, just skip and act as if you have one</p>
-         
+            <p class="subtitle rope-notice">No need for a Rope, just skip and act as if you have one</p>
             
             <div class="weight-container">
                 <label>BODY WEIGHT</label>
                 <select id="weight-select" onchange="saveWeight()"></select>
             </div>
 
+            <span class="instruction-label">Select Workout Duration</span>
             <div class="menu-grid">
                 <button class="btn-choice" onclick="quickStart(5)">5 MIN</button>
                 <button class="btn-choice" onclick="quickStart(10)">10 MIN</button>
@@ -123,7 +136,7 @@
     <script>
         // --- EASY CONFIGURATION ---
         const appName = "QuickBurn HIIT";
-        const appVersion = "v1.3.7";
+        const appVersion = "v1.3.8";
 
         // Global Update Logic
         document.getElementById('app-name-header').innerText = appName.toUpperCase();

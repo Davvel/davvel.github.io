@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jump Rope HIIT Timer</title>
+    <title>Jump Rope HIIT Timer v1.1.0</title>
     <style>
         :root {
             --bg: #121212;
@@ -30,32 +30,44 @@
             -webkit-tap-highlight-color: transparent;
         }
 
-        .container { width: 95%; max-width: 400px; text-align: center; }
+        .container { width: 95%; max-width: 400px; text-align: center; height: 95vh; display: flex; flex-direction: column; }
         h1 { font-size: 28px; margin-bottom: 5px; color: var(--green); letter-spacing: -0.5px; }
-        .subtitle { font-size: 14px; color: var(--text-dim); margin-bottom: 25px; }
+        .subtitle { font-size: 14px; color: var(--text-dim); margin-bottom: 20px; }
 
+        /* Timer Display */
         #timer { font-size: 110px; font-weight: 800; line-height: 1; margin: 10px 0; font-variant-numeric: tabular-nums; }
-        #calories { font-size: 20px; color: var(--text-dim); margin-bottom: 40px; }
+        #calories { font-size: 20px; color: var(--text-dim); margin-bottom: 20px; }
         #status { font-size: 32px; font-weight: bold; letter-spacing: 3px; height: 40px; text-transform: uppercase; }
 
-        .weight-container { margin-bottom: 20px; text-align: left; background: var(--card-bg); padding: 15px; border-radius: 12px; border: 1px solid #333; }
-        label { display: block; font-size: 12px; color: var(--text-dim); margin-bottom: 8px; text-transform: uppercase; font-weight: bold; }
-        
-        select { 
-            background: #2a2a2a; color: white; border: 1px solid #444; font-size: 18px; 
-            width: 100%; padding: 12px; border-radius: 8px; outline: none; appearance: none;
-        }
+        /* Menu/Inputs */
+        .weight-container { margin-bottom: 15px; text-align: left; background: var(--card-bg); padding: 12px; border-radius: 12px; border: 1px solid #333; }
+        label { display: block; font-size: 11px; color: var(--text-dim); margin-bottom: 5px; text-transform: uppercase; font-weight: bold; }
+        select { background: #2a2a2a; color: white; border: 1px solid #444; font-size: 16px; width: 100%; padding: 10px; border-radius: 8px; outline: none; appearance: none; }
 
-        .menu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-        button { border: none; padding: 20px; font-size: 18px; font-weight: bold; border-radius: 15px; cursor: pointer; transition: transform 0.1s; }
+        .menu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        button { border: none; padding: 15px; font-size: 16px; font-weight: bold; border-radius: 15px; cursor: pointer; transition: transform 0.1s; }
         button:active { transform: scale(0.95); }
         
-        .btn-choice { background: var(--card-bg); color: white; border: 1px solid #333; height: 70px; }
-        .btn-start { background: var(--green); color: white; width: 100%; font-size: 24px; border-radius: 50px; height: 80px; }
-        .btn-pause { background: var(--orange); color: white; width: 100%; height: 80px; border-radius: 50px; }
-        .btn-resume { background: var(--blue); color: white; flex: 1; height: 80px; border-radius: 50px; }
-        .btn-cancel { background: var(--red); color: white; flex: 1; height: 80px; border-radius: 50px; }
-        .btn-exit { background: #444; color: white; width: 100%; font-size: 24px; border-radius: 50px; height: 80px; }
+        .btn-choice { background: var(--card-bg); color: white; border: 1px solid #333; height: 60px; }
+        .btn-start { background: var(--green); color: white; width: 100%; font-size: 22px; border-radius: 50px; height: 70px; margin-top: 10px; }
+        .btn-history { background: transparent; color: var(--blue); border: 1px solid var(--blue); width: 100%; margin-top: 15px; font-size: 14px; }
+        .btn-pause { background: var(--orange); color: white; width: 100%; height: 75px; border-radius: 50px; }
+        .btn-resume { background: var(--blue); color: white; flex: 1; height: 75px; border-radius: 50px; }
+        .btn-cancel { background: var(--red); color: white; flex: 1; height: 75px; border-radius: 50px; }
+        .btn-exit { background: #444; color: white; width: 100%; font-size: 22px; border-radius: 50px; height: 70px; }
+
+        /* History Screen Styles */
+        #screen-history { overflow-y: auto; text-align: left; padding: 10px; height: 100%; }
+        .history-month-header { color: var(--green); font-size: 20px; font-weight: bold; margin: 20px 0 10px 5px; border-bottom: 1px solid #333; padding-bottom: 5px; }
+        .history-day-card { background: var(--card-bg); margin-bottom: 8px; padding: 12px; border-radius: 10px; display: flex; justify-content: space-between; align-items: center; border-left: 4px solid #333; }
+        .history-day-card.active { border-left-color: var(--green); }
+        .day-info { display: flex; flex-direction: column; }
+        .day-date { font-weight: bold; font-size: 16px; }
+        .day-name { font-size: 12px; color: var(--text-dim); }
+        .day-stats { text-align: right; }
+        .stat-main { font-weight: bold; color: var(--green); font-size: 16px; }
+        .stat-sub { font-size: 11px; color: var(--text-dim); }
+        .month-summary { background: #252525; padding: 15px; border-radius: 10px; margin: 15px 0; border: 1px dashed var(--green); }
         
         .hidden { display: none; }
         .flex-row { display: flex; gap: 15px; width: 100%; }
@@ -81,6 +93,7 @@
                 <button class="btn-choice" onclick="quickStart(25)">25 MIN</button>
                 <button class="btn-choice" onclick="quickStart(30)">30 MIN</button>
             </div>
+            <button class="btn-history" onclick="showHistory()">VIEW LAST 90 DAY CALENDAR</button>
         </div>
 
         <div id="screen-timer" class="hidden">
@@ -107,6 +120,12 @@
                 <button class="btn-exit" onclick="showMenu()">EXIT</button>
             </div>
         </div>
+
+        <div id="screen-history" class="hidden">
+            <h1 style="text-align:center">90 Day History</h1>
+            <div id="history-content"></div>
+            <button class="btn-exit" onclick="showMenu()" style="margin: 20px 0;">BACK TO MENU</button>
+        </div>
     </div>
 
     <script>
@@ -115,7 +134,10 @@
         let calories = 0;
         let timerInterval = null;
         let audioCtx = null;
+        let sessionSecondsTrained = 0;
+        let sessionCaloriesTrained = 0;
 
+        // --- SETUP WEIGHT ---
         const weightSelect = document.getElementById('weight-select');
         for (let i = 45; i <= 150; i++) {
             let opt = document.createElement('option');
@@ -123,13 +145,11 @@
             opt.innerHTML = i + ' kg (' + Math.round(i * 2.204) + ' lbs)';
             weightSelect.appendChild(opt);
         }
-
-        const savedWeight = localStorage.getItem('userWeight');
-        if (savedWeight) weightSelect.value = savedWeight;
-        else weightSelect.value = 75;
-
+        const savedWeight = localStorage.getItem('userWeight') || 75;
+        weightSelect.value = savedWeight;
         function saveWeight() { localStorage.setItem('userWeight', weightSelect.value); }
 
+        // --- AUDIO ENGINE ---
         function playSound(freq, duration, vol, type = 'sine') {
             if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
             if (audioCtx.state === 'suspended') audioCtx.resume();
@@ -146,11 +166,106 @@
             osc.stop(audioCtx.currentTime + duration);
         }
 
+        // --- HISTORY LOGIC ---
+        function getHistory() {
+            return JSON.parse(localStorage.getItem('jumpRopeHistory') || '{}');
+        }
+
+        function saveProgress(seconds, kcals) {
+            const history = getHistory();
+            const today = new Date().toISOString().split('T')[0];
+            
+            if (!history[today]) history[today] = { seconds: 0, calories: 0 };
+            history[today].seconds += seconds;
+            history[today].calories += kcals;
+
+            // Cleanup: Keep only last 90 days
+            const keys = Object.keys(history).sort();
+            if (keys.length > 90) delete history[keys[0]];
+
+            localStorage.setItem('jumpRopeHistory', JSON.stringify(history));
+        }
+
+        function showHistory() {
+            const history = getHistory();
+            const content = document.getElementById('history-content');
+            content.innerHTML = '';
+            
+            const today = new Date();
+            let currentMonth = -1;
+            let monthSecs = 0;
+            let monthCals = 0;
+
+            // Generate list for last 90 days
+            for (let i = 0; i < 90; i++) {
+                const date = new Date();
+                date.setDate(today.getDate() - i);
+                const dateKey = date.toISOString().split('T')[0];
+                const dayData = history[dateKey] || { seconds: 0, calories: 0 };
+
+                // Month Header Logic
+                if (date.getMonth() !== currentMonth) {
+                    if (currentMonth !== -1) {
+                        renderMonthSummary(content, monthSecs, monthCals);
+                        monthSecs = 0; monthCals = 0;
+                    }
+                    currentMonth = date.getMonth();
+                    const monthName = date.toLocaleString('default', { month: 'long' });
+                    const header = document.createElement('div');
+                    header.className = 'history-month-header';
+                    header.innerText = monthName + " " + date.getFullYear();
+                    content.appendChild(header);
+                }
+
+                monthSecs += dayData.seconds;
+                monthCals += dayData.calories;
+
+                // Day Card
+                const card = document.createElement('div');
+                card.className = `history-day-card ${dayData.seconds > 0 ? 'active' : ''}`;
+                const mins = (dayData.seconds / 60).toFixed(1);
+                
+                card.innerHTML = `
+                    <div class="day-info">
+                        <div class="day-date">${date.getDate()} ${date.toLocaleString('default', { month: 'short' })}</div>
+                        <div class="day-name">${date.toLocaleDateString('en-US', { weekday: 'long' })}</div>
+                    </div>
+                    <div class="day-stats">
+                        <div class="stat-main">${mins} MIN</div>
+                        <div class="stat-sub">${dayData.calories.toFixed(1)} KCAL</div>
+                    </div>
+                `;
+                content.appendChild(card);
+                
+                // Final summary at the end of the loop
+                if (i === 89) renderMonthSummary(content, monthSecs, monthCals);
+            }
+
+            document.getElementById('screen-menu').classList.add('hidden');
+            document.getElementById('screen-history').classList.remove('hidden');
+        }
+
+        function renderMonthSummary(container, secs, cals) {
+            const sum = document.createElement('div');
+            sum.className = 'month-summary';
+            sum.innerHTML = `
+                <label>Month Total</label>
+                <div style="display:flex; justify-content: space-between; font-weight: bold;">
+                    <span>${(secs / 60).toFixed(1)} Minutes</span>
+                    <span style="color:var(--green)">${cals.toFixed(1)} Kcal</span>
+                </div>
+            `;
+            container.appendChild(sum);
+        }
+
+        // --- TIMER LOGIC ---
         function quickStart(mins) {
             saveWeight();
             totalSeconds = mins * 60;
             timeLeft = totalSeconds;
             calories = 0;
+            sessionSecondsTrained = 0;
+            sessionCaloriesTrained = 0;
             updateDisplay();
             document.getElementById('screen-menu').classList.add('hidden');
             document.getElementById('screen-timer').classList.remove('hidden');
@@ -161,13 +276,14 @@
             clearInterval(timerInterval);
             document.getElementById('screen-menu').classList.remove('hidden');
             document.getElementById('screen-timer').classList.add('hidden');
+            document.getElementById('screen-history').classList.add('hidden');
         }
 
         function skipToEnd() {
             clearInterval(timerInterval);
-            timeLeft = 1; // Set to last second
+            timeLeft = 1; 
             updateDisplay();
-            startTimer(); // Auto-resume to play gong and show EXIT
+            startTimer(); 
         }
 
         function updateDisplay() {
@@ -213,7 +329,13 @@
                     const elapsed = totalSeconds - timeLeft;
                     const isRest = (elapsed % 30) >= 20;
                     const met = isRest ? 1.2 : 12.3;
-                    calories += (met * 3.5 * weight) / (200 * 60);
+                    
+                    const calStep = (met * 3.5 * weight) / (200 * 60);
+                    calories += calStep;
+                    
+                    // Track for history
+                    saveProgress(1, calStep);
+
                     timeLeft--;
                     updateDisplay();
                     if (timeLeft === 0) finish();
@@ -225,7 +347,7 @@
         
         function finish() { 
             clearInterval(timerInterval); 
-            playSound(220, 3.0, 0.3); // Final Zen Gong
+            playSound(220, 3.0, 0.3); 
             updateDisplay();
             toggleUI('finished'); 
         }

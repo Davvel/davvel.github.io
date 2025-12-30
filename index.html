@@ -36,7 +36,6 @@
 
         #screen-menu { padding: 20px; text-align: center; }
         #screen-timer { justify-content: center; align-items: center; padding: 20px; }
-        #screen-history { text-align: left; background: var(--bg); }
 
         h1 { font-size: 32px; margin: 10px 0 5px 0; color: var(--green); letter-spacing: -1px; }
         .subtitle { font-size: 14px; color: var(--text-dim); margin-bottom: 8px; }
@@ -63,14 +62,6 @@
         .btn-pause { background: var(--orange); }
         .btn-secondary { background: transparent; color: var(--blue); border: 1px solid var(--blue); width: 100%; margin-top: 10px; font-size: 13px; padding: 15px; border-radius: 15px; }
 
-        .history-header-bar { background: var(--header-bg); padding: 15px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #2d3446; position: sticky; top: 0; z-index: 10; }
-        .back-btn { font-size: 30px; color: var(--blue); cursor: pointer; padding: 0 10px; font-weight: bold; }
-        .history-month-header { color: var(--green); font-size: 20px; font-weight: bold; margin: 25px 0 10px 5px; border-bottom: 1px solid #333; padding-bottom: 5px; }
-        .history-day-card { background: var(--card-bg); margin-bottom: 10px; padding: 15px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; border-left: 5px solid #333; }
-        .history-day-card.active { border-left-color: var(--green); }
-        .stat-main { font-weight: bold; color: var(--green); font-size: 18px; text-align: right; }
-        .month-summary { background: #252525; padding: 15px; border-radius: 12px; margin: 20px 0; border: 1px dashed var(--green); }
-
         .hidden { display: none !important; }
         .flex-row { display: flex; gap: 15px; width: 90%; }
         #ui-idle, #ui-running, #ui-paused, #ui-finished { width: 100%; display: flex; justify-content: center; }
@@ -89,10 +80,12 @@
             <h1 id="menu-name"></h1>
             <p class="subtitle">The High-Intensity Interval Metronome</p>
             <div class="efficiency-badge" onclick="window.location.href='science.html'">SEE THE SCIENCE ➔</div>
+            
             <div class="weight-container">
                 <label>BODY WEIGHT</label>
                 <select id="weight-select" onchange="saveWeight()"></select>
             </div>
+
             <div class="menu-grid">
                 <button class="btn-choice" onclick="quickStart(5)">5 MIN</button>
                 <button class="btn-choice" onclick="quickStart(10)">10 MIN</button>
@@ -101,7 +94,8 @@
                 <button class="btn-choice" onclick="quickStart(25)">25 MIN</button>
                 <button class="btn-choice" onclick="quickStart(30)">30 MIN</button>
             </div>
-            <button class="btn-secondary" onclick="showHistory()">VIEW 90 DAY HISTORY</button>
+            
+            <button class="btn-secondary" onclick="window.location.href='history.html'">VIEW 90 DAY HISTORY</button>
             <button class="btn-secondary" style="color:var(--text-dim); border-color:#333;" onclick="window.location.href='science.html'">WHY HIIT WORKS</button>
             <a href="privacy.html" style="font-size: 11px; color: var(--text-dim); text-decoration: underline; margin-top: 20px; display: block;">Privacy Policy</a>
         </div>
@@ -110,6 +104,7 @@
             <div id="status">READY?</div>
             <div id="timer">300</div>
             <div id="calories">KCAL BURNT: <span id="cal-count">0.0</span></div>
+            
             <div id="ui-idle"><button class="btn-start" onclick="startTimer()">START JUMPING</button></div>
             <div id="ui-running" class="hidden"><button class="btn-pause" onclick="pauseTimer()">PAUSE</button></div>
             <div id="ui-paused" class="hidden">
@@ -120,15 +115,6 @@
             </div>
             <div id="ui-finished" class="hidden"><button class="btn-start" style="background:#444" onclick="showMenu()">EXIT</button></div>
         </div>
-
-        <div id="screen-history" class="screen hidden">
-            <div class="history-header-bar">
-                <div class="back-btn" onclick="showMenu()">&lsaquo;</div>
-                <div style="font-weight: bold; color: var(--green);">90 DAY HISTORY</div>
-                <div style="width:40px"></div>
-            </div>
-            <div id="history-content" style="padding: 10px; padding-bottom: 30px;"></div>
-        </div>
     </div>
 
     <div class="ad-banner" id="ad-banner-slot">AD BANNER SLOT (SENSE/ADMOB)</div>
@@ -136,7 +122,7 @@
     <script>
         // --- EASY CONFIGURATION ---
         const appName = "QuickBurn HIIT";
-        const appVersion = "v1.3.4";
+        const appVersion = "v1.3.5";
 
         // Global Update Logic
         document.getElementById('app-name-header').innerText = appName.toUpperCase();
@@ -181,36 +167,6 @@
             localStorage.setItem('jumpRopeHistory', JSON.stringify(history));
         }
 
-        function renderMonthSummary(container, secs, cals) {
-            const sum = document.createElement('div'); sum.className = 'month-summary';
-            sum.innerHTML = `<label>Month Total</label><div style="display:flex; justify-content: space-between; font-weight: bold;"><span>${(secs / 60).toFixed(1)} Minutes</span><span style="color:var(--green)">${cals.toFixed(1)} Kcal</span></div>`;
-            container.appendChild(sum);
-        }
-
-        function showHistory() {
-            const history = getHistory(); const content = document.getElementById('history-content');
-            content.innerHTML = ''; const today = new Date();
-            let currentMonth = -1, mSecs = 0, mCals = 0;
-            for (let i = 0; i < 90; i++) {
-                const date = new Date(); date.setDate(today.getDate() - i);
-                const dateKey = date.toISOString().split('T')[0];
-                const dayData = history[dateKey] || { seconds: 0, calories: 0 };
-                if (date.getMonth() !== currentMonth) {
-                    if (currentMonth !== -1) renderMonthSummary(content, mSecs, mCals);
-                    currentMonth = date.getMonth(); mSecs = 0; mCals = 0;
-                    const header = document.createElement('div'); header.className = 'history-month-header';
-                    header.innerText = date.toLocaleString('default', { month: 'long' }) + " " + date.getFullYear();
-                    content.appendChild(header);
-                }
-                mSecs += dayData.seconds; mCals += dayData.calories;
-                const card = document.createElement('div');
-                card.className = `history-day-card ${dayData.seconds > 0 ? 'active' : ''}`;
-                card.innerHTML = `<div class="day-info"><div class="day-date">${date.getDate()} ${date.toLocaleString('default', { month: 'short' })}</div><div class="day-name">${date.toLocaleDateString('en-US', { weekday: 'long' })}</div></div><div class="day-stats"><div class="stat-main">${(dayData.seconds / 60).toFixed(1)} MIN</div><div class="stat-sub">${dayData.calories.toFixed(1)} KCAL</div></div>`;
-                content.appendChild(card);
-            }
-            switchScreen('screen-history');
-        }
-
         function quickStart(mins) {
             saveWeight(); totalSeconds = mins * 60; timeLeft = totalSeconds; calories = 0;
             updateDisplay(); switchScreen('screen-timer'); toggleUI('idle');
@@ -239,9 +195,12 @@
             timerInterval = setInterval(() => {
                 if (timeLeft > 0) {
                     const elapsed = totalSeconds - timeLeft; const cyclePos = elapsed % 30;
-                    if (cyclePos < 19) playSound(440, 0.4, 0.15);
-                    else if (cyclePos === 19) { playSound(660, 0.1, 0.2); setTimeout(() => playSound(660, 0.1, 0.2), 250); setTimeout(() => playSound(660, 0.1, 0.2), 500); }
-                    else if (cyclePos === 29) { playSound(880, 0.15, 0.25); setTimeout(() => playSound(880, 0.15, 0.25), 200); }
+                    if (cyclePos < 19) playSound(440, 0.4, 0.15); // Standard tick
+                    else if (cyclePos === 19) { // Rest Warning
+                        playSound(660, 0.1, 0.2); setTimeout(() => playSound(660, 0.1, 0.2), 250); setTimeout(() => playSound(660, 0.1, 0.2), 500); 
+                    } else if (cyclePos === 29) { // Jump Warning
+                        playSound(880, 0.15, 0.25); setTimeout(() => playSound(880, 0.15, 0.25), 200); 
+                    }
                     const cStep = ((cyclePos >= 20 ? 1.2 : 12.3) * 3.5 * parseFloat(weightSelect.value)) / (200 * 60);
                     calories += cStep; saveProgress(1, cStep); timeLeft--; updateDisplay();
                     if (timeLeft === 0) { clearInterval(timerInterval); releaseWakeLock(); playSound(220, 3.0, 0.3); updateDisplay(); toggleUI('finished'); }

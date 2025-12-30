@@ -142,7 +142,7 @@
 
     <script>
         const appName = "QuickBurn HIIT";
-        const appVersion = "v1.3.10";
+        const appVersion = "v1.3.11";
 
         document.getElementById('app-name-header').innerText = appName.toUpperCase();
         document.getElementById('version-display').innerText = appVersion;
@@ -151,11 +151,30 @@
 
         let totalSeconds = 300, timeLeft = 300, calories = 0, timerInterval = null, audioCtx = null, wakeLock = null, isRunning = false, isPaused = false;
 
+        // Improved Wake Lock Persistence
         async function requestWakeLock() {
-            try { if ('wakeLock' in navigator) wakeLock = await navigator.wakeLock.request('screen'); } 
-            catch (err) { console.log(err.message); }
+            if ('wakeLock' in navigator) {
+                try {
+                    wakeLock = await navigator.wakeLock.request('screen');
+                } catch (err) {
+                    console.error(`${err.name}, ${err.message}`);
+                }
+            }
         }
-        function releaseWakeLock() { if (wakeLock !== null) { wakeLock.release(); wakeLock = null; } }
+
+        function releaseWakeLock() {
+            if (wakeLock !== null) {
+                wakeLock.release();
+                wakeLock = null;
+            }
+        }
+
+        // Re-request lock if user tabs back or screen flickers
+        document.addEventListener('visibilitychange', async () => {
+            if (wakeLock !== null && document.visibilityState === 'visible') {
+                await requestWakeLock();
+            }
+        });
 
         const weightSelect = document.getElementById('weight-select');
         for (let i = 45; i <= 150; i++) {
@@ -209,8 +228,6 @@
             const statusLabel = document.getElementById('status');
             
             if (!isRunning) return;
-
-            // If manually paused via button
             if (isPaused) {
                 statusLabel.innerText = "PAUSED";
                 statusLabel.style.color = "var(--blue)";
@@ -219,7 +236,6 @@
             }
 
             const cyclePos = (totalSeconds - timeLeft) % 30;
-            
             if (timeLeft <= 0) { 
                 statusLabel.innerText = "DONE!"; 
                 statusLabel.style.color = "var(--green)";
@@ -241,7 +257,8 @@
             isRunning = true;
             isPaused = false;
             if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            requestWakeLock(); toggleUI('running');
+            requestWakeLock(); // Request Screen On
+            toggleUI('running');
             updateDisplay(); 
             
             timerInterval = setInterval(() => {
@@ -262,7 +279,7 @@
 
         function pauseTimer() { 
             clearInterval(timerInterval); 
-            releaseWakeLock(); 
+            releaseWakeLock(); // Allow screen to dim when paused to save battery
             isPaused = true; 
             toggleUI('paused'); 
             updateDisplay(); 

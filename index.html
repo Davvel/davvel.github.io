@@ -3,102 +3,54 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>QuickBurn Jump Tracker</title>
+    <title>QuickBurn HIIT</title>
+    
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="icon-512.png">
+    <meta name="theme-color" content="#4CAF50">
+
     <style>
         :root {
-            --bg: #121212;
-            --card-bg: #1e1e1e;
-            --green: #4CAF50;
-            --orange: #FF9800;
-            --red: #f44336;
-            --blue: #2196F3;
-            --text: #ffffff;
-            --text-dim: #888888;
+            --bg: #121212; --card-bg: #1e1e1e; --green: #4CAF50; --orange: #FF9800;
+            --red: #f44336; --blue: #2196F3; --text: #ffffff; --text-dim: #888888;
             --header-bg: #1a1f2c; 
         }
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            background-color: var(--bg);
-            color: var(--text);
-            margin: 0;
-            padding: 0;
-            display: flex;
-            flex-direction: column;
-            height: 100vh; /* Full viewport height */
-            overflow: hidden; 
-            user-select: none;
-            -webkit-tap-highlight-color: transparent;
+            background-color: var(--bg); color: var(--text); margin: 0; padding: 0;
+            display: flex; flex-direction: column; height: 100vh; overflow: hidden; 
+            user-select: none; -webkit-tap-highlight-color: transparent;
         }
 
-        /* Fixed Header */
         .app-version-header {
-            background: var(--header-bg);
-            padding: 12px;
-            text-align: center;
-            border-bottom: 1px solid #2d3446;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 10px;
-            font-weight: bold;
-            color: var(--green);
-            z-index: 100;
-            flex-shrink: 0;
+            background: var(--header-bg); padding: 12px; text-align: center;
+            border-bottom: 1px solid #2d3446; display: flex; justify-content: center;
+            align-items: center; gap: 10px; font-weight: bold; color: var(--green);
+            z-index: 100; flex-shrink: 0;
         }
-        .version-pill {
-            background: var(--green);
-            color: #000;
-            padding: 2px 8px;
-            border-radius: 12px;
-            font-size: 10px;
-            text-transform: uppercase;
-        }
+        .version-pill { background: var(--green); color: #000; padding: 2px 8px; border-radius: 12px; font-size: 10px; text-transform: uppercase; }
 
-        /* Main Container: Occupies space between header and ad */
-        .container { 
-            flex: 1;
-            width: 100%; 
-            max-width: 400px; 
-            margin: 0 auto;
-            position: relative;
-            overflow: hidden;
-        }
+        .container { flex: 1; width: 100%; max-width: 400px; margin: 0 auto; position: relative; overflow: hidden; }
+        .screen { position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: flex; flex-direction: column; overflow-y: auto; -webkit-overflow-scrolling: touch; }
 
-        /* Universal Screen Style */
-        .screen {
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            display: flex;
-            flex-direction: column;
-            overflow-y: auto; /* Enable scrolling for content if it exceeds height */
-            -webkit-overflow-scrolling: touch;
-        }
+        #screen-splash { justify-content: center; align-items: center; background: var(--bg); z-index: 1000; text-align: center; padding: 20px; }
+        .splash-logo { font-size: 42px; font-weight: 800; color: var(--green); letter-spacing: -2px; margin-bottom: 10px; animation: pulse 1.5s infinite; }
+        .splash-pitch { color: var(--green); opacity: 0.9; font-weight: bold; letter-spacing: 1px; text-transform: uppercase; font-size: 14px; margin-bottom: 15px; }
+        .air-skip-tag { color: var(--text-dim); font-size: 10px; letter-spacing: 2px; border-top: 1px solid #333; padding-top: 10px; text-transform: uppercase; }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
 
-        /* Menu Screen Padding */
         #screen-menu { padding: 20px; text-align: center; }
-        
-        /* Timer Screen: Still centered, but scrollable if needed on tiny phones */
-        #screen-timer {
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-        }
+        #screen-timer { justify-content: center; align-items: center; padding: 20px; }
+        #screen-history { text-align: left; background: var(--bg); }
 
         h1 { font-size: 32px; margin: 10px 0 5px 0; color: var(--green); letter-spacing: -1px; }
         .subtitle { font-size: 14px; color: var(--text-dim); margin-bottom: 8px; }
         
         .efficiency-badge {
-            background: rgba(76, 175, 80, 0.1);
-            color: var(--green);
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-size: 11px;
-            display: inline-block;
-            margin-bottom: 20px;
-            font-weight: bold;
-            border: 1px solid rgba(76, 175, 80, 0.3);
-            text-transform: uppercase;
+            background: rgba(76, 175, 80, 0.1); color: var(--green); padding: 8px 15px;
+            border-radius: 20px; font-size: 11px; display: inline-block; margin-bottom: 20px;
+            font-weight: bold; border: 1px solid rgba(76, 175, 80, 0.3); text-transform: uppercase; cursor: pointer;
         }
 
         #timer { font-size: 110px; font-weight: 800; line-height: 1; margin: 10px 0; font-variant-numeric: tabular-nums; }
@@ -106,79 +58,53 @@
         #status { font-size: 28px; font-weight: bold; letter-spacing: 3px; height: 35px; text-transform: uppercase; }
 
         .weight-container { margin-bottom: 15px; text-align: left; background: var(--card-bg); padding: 15px; border-radius: 12px; border: 1px solid #333; }
-        label { display: block; font-size: 12px; color: var(--text-dim); margin-bottom: 8px; text-transform: uppercase; font-weight: bold; }
+        label { display: block; font-size: 11px; color: var(--text-dim); margin-bottom: 8px; text-transform: uppercase; font-weight: bold; }
         select { background: #2a2a2a; color: white; border: 1px solid #444; font-size: 18px; width: 100%; padding: 12px; border-radius: 8px; outline: none; appearance: none; }
 
         .menu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        button { border: none; padding: 15px; font-size: 18px; font-weight: bold; border-radius: 15px; cursor: pointer; transition: transform 0.1s; }
+        button { border: none; padding: 15px; font-size: 18px; font-weight: bold; border-radius: 15px; cursor: pointer; }
         
-        .btn-choice { background: var(--card-bg); color: white; border: 1px solid #333; height: 65px; }
-        .btn-start { background: var(--green); color: white; width: 90%; font-size: 22px; border-radius: 50px; height: 75px; }
-        .btn-history { background: transparent; color: var(--blue); border: 1px solid var(--blue); width: 100%; margin-top: 20px; font-size: 14px; padding: 15px; }
-        .btn-pause { background: var(--orange); color: white; width: 90%; height: 75px; border-radius: 50px; }
-        .btn-resume { background: var(--blue); color: white; flex: 1; height: 75px; border-radius: 50px; }
-        .btn-cancel { background: var(--red); color: white; flex: 1; height: 75px; border-radius: 50px; }
-        .btn-exit { background: #444; color: white; width: 90%; font-size: 22px; border-radius: 50px; height: 75px; margin-top: 15px;}
+        .btn-choice { background: var(--card-bg); color: white; border: 1px solid #333; height: 60px; }
+        .btn-start, .btn-pause { background: var(--green); color: white; width: 90%; font-size: 22px; border-radius: 50px; height: 75px; }
+        .btn-pause { background: var(--orange); }
+        .btn-secondary { background: transparent; color: var(--blue); border: 1px solid var(--blue); width: 100%; margin-top: 10px; font-size: 13px; padding: 15px; border-radius: 15px; }
 
-        /* Fixed Ad Banner */
-        .ad-banner {
-            flex-shrink: 0;
-            width: 100%;
-            height: 60px;
-            background: #000;
-            color: #444;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 10px;
-            border-top: 1px solid #2d3446;
-            z-index: 1000;
-        }
-
-        .privacy-link { font-size: 11px; color: var(--text-dim); text-decoration: underline; margin: 20px 0; display: block; }
-
-        .history-header-bar {
-            background: var(--header-bg);
-            padding: 15px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            border-bottom: 1px solid #2d3446;
-            position: sticky;
-            top: 0;
-            z-index: 10;
-        }
+        .history-header-bar { background: var(--header-bg); padding: 15px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #2d3446; position: sticky; top: 0; z-index: 10; }
         .back-btn { font-size: 30px; color: var(--blue); cursor: pointer; padding: 0 10px; font-weight: bold; }
-
         .history-month-header { color: var(--green); font-size: 20px; font-weight: bold; margin: 25px 0 10px 5px; border-bottom: 1px solid #333; padding-bottom: 5px; }
         .history-day-card { background: var(--card-bg); margin-bottom: 10px; padding: 15px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; border-left: 5px solid #333; }
         .history-day-card.active { border-left-color: var(--green); }
         .stat-main { font-weight: bold; color: var(--green); font-size: 18px; text-align: right; }
         .month-summary { background: #252525; padding: 15px; border-radius: 12px; margin: 20px 0; border: 1px dashed var(--green); }
-        
+
         .hidden { display: none !important; }
         .flex-row { display: flex; gap: 15px; width: 90%; }
         #ui-idle, #ui-running, #ui-paused, #ui-finished { width: 100%; display: flex; justify-content: center; }
+
+        .ad-banner { flex-shrink: 0; width: 100%; height: 60px; background: #000; color: #444; display: flex; align-items: center; justify-content: center; font-size: 10px; border-top: 1px solid #2d3446; z-index: 1000; }
     </style>
 </head>
 <body>
 
     <div class="app-version-header">
-        QUICKBURN <span class="version-pill">v1.3.4</span>
+        <span id="app-name-header"></span> <span class="version-pill" id="version-display"></span>
     </div>
 
     <div class="container">
-        <div id="screen-menu" class="screen">
-            <h1>QuickBurn</h1>
-            <p class="subtitle">Jump Rope Calorie Tracker</p>
-            <div class="efficiency-badge">The fastest way to burn calories</div>
-            
+        <div id="screen-splash" class="screen">
+            <div class="splash-logo" id="splash-name"></div>
+            <div class="splash-pitch">Just follow the Rhythm and burn the fat</div>
+            <div class="air-skip-tag">No rope? Just air-skip your fat away</div>
+        </div>
+
+        <div id="screen-menu" class="screen hidden">
+            <h1 id="menu-name"></h1>
+            <p class="subtitle">The High-Intensity Interval Metronome</p>
+            <div class="efficiency-badge" onclick="window.location.href='science.html'">SEE THE SCIENCE ➔</div>
             <div class="weight-container">
-                <label>Body Weight</label>
-                <select id="weight-select" onchange="saveWeight()">
-                </select>
+                <label>BODY WEIGHT</label>
+                <select id="weight-select" onchange="saveWeight()"></select>
             </div>
-            <label style="text-align: left; margin-left: 5px;">Tap Duration to Start</label>
             <div class="menu-grid">
                 <button class="btn-choice" onclick="quickStart(5)">5 MIN</button>
                 <button class="btn-choice" onclick="quickStart(10)">10 MIN</button>
@@ -187,24 +113,24 @@
                 <button class="btn-choice" onclick="quickStart(25)">25 MIN</button>
                 <button class="btn-choice" onclick="quickStart(30)">30 MIN</button>
             </div>
-            <button class="btn-history" onclick="showHistory()">VIEW 90 DAY CALENDAR</button>
-            <a href="privacy.html" class="privacy-link">Privacy Policy</a>
+            <button class="btn-secondary" onclick="showHistory()">VIEW 90 DAY HISTORY</button>
+            <button class="btn-secondary" style="color:var(--text-dim); border-color:#333;" onclick="window.location.href='science.html'">WHY HIIT WORKS</button>
+            <a href="privacy.html" style="font-size: 11px; color: var(--text-dim); text-decoration: underline; margin-top: 20px; display: block;">Privacy Policy</a>
         </div>
 
         <div id="screen-timer" class="screen hidden">
             <div id="status">READY?</div>
             <div id="timer">300</div>
             <div id="calories">KCAL BURNT: <span id="cal-count">0.0</span></div>
-            
             <div id="ui-idle"><button class="btn-start" onclick="startTimer()">START JUMPING</button></div>
             <div id="ui-running" class="hidden"><button class="btn-pause" onclick="pauseTimer()">PAUSE</button></div>
             <div id="ui-paused" class="hidden">
                 <div class="flex-row">
-                    <button class="btn-resume" onclick="startTimer()">RESUME</button>
-                    <button class="btn-cancel" onclick="skipToEnd()">CANCEL</button>
+                    <button style="background:var(--blue); color:white; flex:1; height:75px; border-radius:50px;" onclick="startTimer()">RESUME</button>
+                    <button style="background:var(--red); color:white; flex:1; height:75px; border-radius:50px;" onclick="skipToEnd()">CANCEL</button>
                 </div>
             </div>
-            <div id="ui-finished" class="hidden"><button class="btn-exit" onclick="showMenuWithAd()">EXIT</button></div>
+            <div id="ui-finished" class="hidden"><button class="btn-start" style="background:#444" onclick="showMenu()">EXIT</button></div>
         </div>
 
         <div id="screen-history" class="screen hidden">
@@ -217,15 +143,23 @@
         </div>
     </div>
 
-    <div class="ad-banner" id="ad-banner-slot">
-        AD BANNER SLOT (SENSE/ADMOB)
-    </div>
+    <div class="ad-banner" id="ad-banner-slot">AD BANNER SLOT (SENSE/ADMOB)</div>
 
     <script>
-        let totalSeconds = 300, timeLeft = 300, calories = 0, timerInterval = null, audioCtx = null, wakeLock = null;
+        // --- EASY CONFIGURATION ---
+        const appName = "QuickBurn HIIT";
+        const appVersion = "v1.3.4";
 
-        function showInterstitialAd(callback) { setTimeout(callback, 500); }
-        function showMenuWithAd() { clearInterval(timerInterval); releaseWakeLock(); showInterstitialAd(() => switchScreen('screen-menu')); }
+        // Global Update Logic
+        document.getElementById('app-name-header').innerText = appName.toUpperCase();
+        document.getElementById('version-display').innerText = appVersion;
+        document.getElementById('splash-name').innerText = appName;
+        document.getElementById('menu-name').innerText = appName;
+        document.title = `${appName} ${appVersion}`;
+
+        window.addEventListener('load', () => { setTimeout(() => { switchScreen('screen-menu'); }, 2500); });
+
+        let totalSeconds = 300, timeLeft = 300, calories = 0, timerInterval = null, audioCtx = null, wakeLock = null;
 
         async function requestWakeLock() {
             try { if ('wakeLock' in navigator) wakeLock = await navigator.wakeLock.request('screen'); } 
@@ -256,50 +190,10 @@
 
         function getHistory() { return JSON.parse(localStorage.getItem('jumpRopeHistory') || '{}'); }
         function saveProgress(secs, kcals) {
-            const history = getHistory();
-            const today = new Date().toISOString().split('T')[0];
+            const history = getHistory(); const today = new Date().toISOString().split('T')[0];
             if (!history[today]) history[today] = { seconds: 0, calories: 0 };
             history[today].seconds += secs; history[today].calories += kcals;
             localStorage.setItem('jumpRopeHistory', JSON.stringify(history));
-        }
-
-        function showHistory() {
-            const history = getHistory(); const content = document.getElementById('history-content');
-            content.innerHTML = ''; const today = new Date();
-            let currentMonth = -1, mSecs = 0, mCals = 0;
-
-            for (let i = 0; i < 90; i++) {
-                const date = new Date(); date.setDate(today.getDate() - i);
-                const dateKey = date.toISOString().split('T')[0];
-                const dayData = history[dateKey] || { seconds: 0, calories: 0 };
-                if (date.getMonth() !== currentMonth) {
-                    if (currentMonth !== -1) renderMonthSummary(content, mSecs, mCals);
-                    currentMonth = date.getMonth(); mSecs = 0; mCals = 0;
-                    const header = document.createElement('div');
-                    header.className = 'history-month-header';
-                    header.innerText = date.toLocaleString('default', { month: 'long' }) + " " + date.getFullYear();
-                    content.appendChild(header);
-                }
-                mSecs += dayData.seconds; mCals += dayData.calories;
-                const card = document.createElement('div');
-                card.className = `history-day-card ${dayData.seconds > 0 ? 'active' : ''}`;
-                card.innerHTML = `<div class="day-info"><div class="day-date">${date.getDate()} ${date.toLocaleString('default', { month: 'short' })}</div><div class="day-name">${date.toLocaleDateString('en-US', { weekday: 'long' })}</div></div><div class="day-stats"><div class="stat-main">${(dayData.seconds / 60).toFixed(1)} MIN</div><div class="stat-sub">${dayData.calories.toFixed(1)} KCAL</div></div>`;
-                content.appendChild(card);
-                if (i === 89) renderMonthSummary(content, mSecs, mCals);
-            }
-
-            const resetCont = document.createElement('div');
-            resetCont.style.cssText = "margin-top:40px; padding:20px; text-align:center;";
-            resetCont.innerHTML = `<label style="color:var(--red); font-size:10px;">DANGER ZONE</label><button onclick="confirmReset()" style="background:transparent; color:var(--red); border:1px solid var(--red); width:100%; font-size:12px; padding:10px; border-radius:10px;">CLEAR ALL WORKOUT DATA</button>`;
-            content.appendChild(resetCont);
-
-            switchScreen('screen-history');
-        }
-
-        function confirmReset() {
-            const challenge = prompt("This will permanently delete your history. To proceed, type 'SURE' in all capital letters:");
-            if (challenge === "SURE") { localStorage.removeItem('jumpRopeHistory'); alert("Data cleared."); showMenu(); }
-            else if (challenge !== null) alert("Reset cancelled.");
         }
 
         function renderMonthSummary(container, secs, cals) {
@@ -308,14 +202,40 @@
             container.appendChild(sum);
         }
 
+        function showHistory() {
+            const history = getHistory(); const content = document.getElementById('history-content');
+            content.innerHTML = ''; const today = new Date();
+            let currentMonth = -1, mSecs = 0, mCals = 0;
+            for (let i = 0; i < 90; i++) {
+                const date = new Date(); date.setDate(today.getDate() - i);
+                const dateKey = date.toISOString().split('T')[0];
+                const dayData = history[dateKey] || { seconds: 0, calories: 0 };
+                if (date.getMonth() !== currentMonth) {
+                    if (currentMonth !== -1) renderMonthSummary(content, mSecs, mCals);
+                    currentMonth = date.getMonth(); mSecs = 0; mCals = 0;
+                    const header = document.createElement('div'); header.className = 'history-month-header';
+                    header.innerText = date.toLocaleString('default', { month: 'long' }) + " " + date.getFullYear();
+                    content.appendChild(header);
+                }
+                mSecs += dayData.seconds; mCals += dayData.calories;
+                const card = document.createElement('div');
+                card.className = `history-day-card ${dayData.seconds > 0 ? 'active' : ''}`;
+                card.innerHTML = `<div class="day-info"><div class="day-date">${date.getDate()} ${date.toLocaleString('default', { month: 'short' })}</div><div class="day-name">${date.toLocaleDateString('en-US', { weekday: 'long' })}</div></div><div class="day-stats"><div class="stat-main">${(dayData.seconds / 60).toFixed(1)} MIN</div><div class="stat-sub">${dayData.calories.toFixed(1)} KCAL</div></div>`;
+                content.appendChild(card);
+            }
+            switchScreen('screen-history');
+        }
+
         function quickStart(mins) {
             saveWeight(); totalSeconds = mins * 60; timeLeft = totalSeconds; calories = 0;
             updateDisplay(); switchScreen('screen-timer'); toggleUI('idle');
         }
+
         function switchScreen(id) {
             document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
             document.getElementById(id).classList.remove('hidden');
         }
+
         function showMenu() { clearInterval(timerInterval); releaseWakeLock(); switchScreen('screen-menu'); }
         function skipToEnd() { clearInterval(timerInterval); timeLeft = 1; updateDisplay(); startTimer(); }
 

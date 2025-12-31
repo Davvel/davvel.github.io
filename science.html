@@ -30,9 +30,10 @@
         .back-btn {
             font-size: 30px;
             color: var(--blue);
-            text-decoration: none;
+            cursor: pointer;
             padding-right: 20px;
             font-weight: bold;
+            display: inline-block;
         }
         .content { padding: 20px; max-width: 500px; margin: 0 auto; }
         h2 { color: var(--green); margin-top: 0; }
@@ -49,7 +50,7 @@
 <body>
 
     <div class="header">
-        <a href="main.html" class="back-btn">&lsaquo;</a>
+        <span onclick="history.back()" class="back-btn">&lsaquo;</span>
         <div style="font-weight: bold; color: var(--green);">THE HIIT SCIENCE</div>
     </div>
 
@@ -72,7 +73,8 @@
             <p><b>4. Efficiency:</b> Scientific studies show that short bursts of rhythmic HIIT can improve cardiovascular health faster than long-duration steady-state exercise.</p>
         </div>
 
-        <button onclick="window.location.href='main.html'" style="width:100%; background:var(--green); border:none; color:white; padding:15px; border-radius:50px; font-weight:bold; font-size:16px;">BACK TO TRAINER</button>
+        <button onclick="history.back()" style="width:100%; background:var(--green); border:none; color:white; padding:15px; border-radius:50px; font-weight:bold; font-size:16px; cursor:pointer;">BACK TO TRAINER</button>
+        
         <div style="height: 50px;"></div>
     </div>
 
